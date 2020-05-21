@@ -3,12 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <script type="text/javascript" src="JavaScript/JavaScript.js"></script>
     <script>
         function cli() {
-            console.log("go?")
-            document.getElementById("div13-1").innerText="ok";
-            document.getElementById("div13-1").style.color="#66ccff";
-            document.getElementById("div13-1").append("<p>这是一个段落.</p>");
+            console.log("go?");
+            document.getElementById("div13-1").innerText='ok';
         }
     </script>
 </head>
@@ -19,9 +18,17 @@
 <!--
 当浏览器无法使用脚本时的替代内容,比如当浏览器禁用脚本或不支持客户端脚本时
  <noscript> 元素可包含普通 HTML 页面的 body 元素中能够找到的所有元素
+
+ JavaScript 对大小写敏感
 -->
 <noscript>抱歉,你的浏览器不支持 JavaScript!</noscript>
 <span id="div13-1">点击之前!</span>
+<div id="div13-2"></div>
+<div id="div13-3"></div>
 <button type="button" onclick="cli()">点我</button>
+<button type="button" onclick="test1()">点我</button>
+<button type="button" onclick="test2()">点我</button>
+<button type="button" onclick="test3()">点我</button>
+<button type="button" onclick="info()">点我</button>
 </body>
 </html>
