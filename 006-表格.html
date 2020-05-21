@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<table border="4" cellpadding="5" cellspacing="5">  <!--标签 单元格边距 单元格间距-->
+    <caption>table</caption>  <!--表名-->
+
+    <thead>  <!--表头-->
+        <tr bgcolor="#faebd7">
+            <th>
+            <div style="color: blueviolet">h1</div>
+            </th>  <!--可以使用<thead>标签代替-->
+            <th>
+            <div style="color: blueviolet">h2</div>
+            </th>
+            <th>
+            <div style="color: blueviolet">h3</div>
+            </th>
+        </tr>
+    </thead>
+
+    <colgroup>  <!--设置列背景颜色-->
+        <col span="1" style="background-color: #aaccff">
+        <col span="1" style="background-color: #aaccaa">
+        <col span="1" style="background-color: #aaaacc">
+    </colgroup>
+    <tbody>  <!--表体-->
+    <tr>
+        <td>r1,c1</td>
+        <td>r1,c2</td>
+        <td>r1,c3</td>
+    </tr>
+    <tr>
+        <td>r2,c1</td>
+        <td>r2,c2</td>
+        <td>r2,c3</td>
+    </tr>
+    <tr>
+        <td rowspan="2">
+            <li>li 1</li>
+            <li>li 2</li>
+            <li>li 3</li>
+        </td>
+        <td>
+            <table border="2">
+                <tr>
+                    <td>*r1,c1</td>
+                    <td>*r1,c2</td>
+                </tr>
+                <tr>
+                    <td>*r2,c1</td>
+                    <td>*r2,c2</td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+    <tr>
+        <td>r3,c2</td>
+    </tr>
+    <tr>
+        <td colspan="2">r4,c1</td>
+    </tr>
+    </tbody>
+
+    <tfoot>  <!--表脚-->
+    <tr>
+        <td>count:</td>
+        <td>0</td>
+    </tr>
+    </tfoot>
+
+</table>
+</body>
+</html>

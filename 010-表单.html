@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<form action="010-表单接收.html">
+    <fieldset>  <!--带边框-->
+        <legend>Information:</legend>
+        First Name:<input type="text" name="firstname" value="First Name"><br/>  <!--默认文本-->
+        Last Name:<input type="text" name="lastname" t value="Last Name"><br/>  <!--提示文本-->
+        Pass Word:<input type="password" name="password"><br/>
+        <input type="radio" name="sex" value="male" aria-selected="false">Male<br/>
+        <input type="radio" name="sex" value="female">Female<br/>
+        <input type="checkbox" name="vehicle" value="swim">Swim<br/>
+        <input type="checkbox" name="vehicle" value="Bike">Bike<br/>
+        <input type="checkbox" name="vehicle" value="Baseball">Baseball<br/>
+        <input type="checkbox" name="vehicle" value="dance">dance<br/>
+        <select name="cars">
+            <optgroup label="Swedish Cars">
+                <option value="volvo">Volvo</option>
+                <option value="saab" selected>Saab</option>
+            </optgroup>
+            <optgroup label="German Cars">
+                <option value="fiat">Fiat</option>
+                <option value="audi">Audi</option>
+            </optgroup>
+
+        </select><br/>
+        <textarea rows="10" cols="30">文本框</textarea>
+        <input type="submit" value="Submit">
+    </fieldset>
+
+</form>
+</body>
+</html>

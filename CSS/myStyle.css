@@ -1,0 +1,60 @@
+/*
+Q:什么是 CSS ?
+A: CSS 指层叠样式表( Cascading Style Sheets )
+  样式定义如何显示 HTML 元素
+  样式通常存储在样式表中
+  把样式添加到 HTML4.0 中,是为了解决内容与表现分离的问题
+  外部样式表可以极大提高工作效率
+  外部样式表通常存储在 CSS 文件中
+  多个样式定义层可层叠为一个
+
+* CSS 规则通常由两个主要的部分构成:选择器,一条或多条声明
+
+* id         #
+  class      .
+
+*背景效果
+  background-color   背景颜色
+  background-image   背景图像
+  background-color   背景颜色
+  background-color   背景颜色
+  background-color   背景颜色
+ */
+body{
+    background-color: #aaccff;
+    /*text-align: left;*/
+    /*background-image: url("../Resourse/bill.jpg");*/
+    width: 500px;
+    height: 500px;
+    background-repeat: no-repeat;  /*x,y轴重复排列*/
+    margin:50px 50px 50px;
+    padding: 5px;
+    border: 50px solid #aaddaa;
+    /*background-position: center;  !*设置背景图像的起始位置*!*/
+    /*background-attachment: fixed;  !*背景图像是否固定或随页面的其余部分滚动*!*/
+    /*background: #aaccff url("../Resourse/bill.jpg") no-repeat fixed center;
+      !*简写背景属性,background:bg-color bg-image position/bg-size bg-repeat bg-origin bg-clip bg-attachment initial|inherit;*!
+      */
+}
+body{
+    /*text-align: right;*/
+}  /*多重样式,*/
+#div5-1{
+    height: 500px;
+    width: 500px;
+    background-image: url("../Resourse/bill.jpg");
+    /*
+    默认情况下在页面的水平和垂直方向上平铺
+    可以添加一些属性限制
+    */
+    /*background-repeat: repeat-x;  !*仅在水平方向上平铺*!*/
+    /*background-repeat: repeat-y;  !*仅在垂直方向上平铺*!*/
+    /*background-repeat: no-repeat;  !*不平铺*!*/
+}
+
+#div5-2{
+    background-image: url("../Resourse/bill.jpg");
+    height: 500px;
+    width: 500px;
+    background-position: right top;
+}

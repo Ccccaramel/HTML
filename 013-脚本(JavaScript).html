@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script>
+        function cli() {
+            console.log("go?")
+            document.getElementById("div13-1").innerText="ok";
+            document.getElementById("div13-1").style.color="#66ccff";
+            document.getElementById("div13-1").append("<p>这是一个段落.</p>");
+        }
+    </script>
+</head>
+<body>
+<script>
+    document.write("Hello World!")
+</script>
+<!--
+当浏览器无法使用脚本时的替代内容,比如当浏览器禁用脚本或不支持客户端脚本时
+ <noscript> 元素可包含普通 HTML 页面的 body 元素中能够找到的所有元素
+-->
+<noscript>抱歉,你的浏览器不支持 JavaScript!</noscript>
+<span id="div13-1">点击之前!</span>
+<button type="button" onclick="cli()">点我</button>
+</body>
+</html>
