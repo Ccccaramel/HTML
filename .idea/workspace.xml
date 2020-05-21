@@ -1,12 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="c3c0318b-81e2-4e2e-a120-5f1340f6104c" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/015-URL.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/000-特殊字符编码.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/014-字符实体.html" beforeDir="false" afterPath="$PROJECT_DIR$/014-字符实体.html" afterDir="false" />
-    </list>
+    <list default="true" id="c3c0318b-81e2-4e2e-a120-5f1340f6104c" name="Default Changelist" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -60,7 +55,7 @@
       </list>
     </option>
   </component>
-  <component name="ProjectFrameBounds" extendedState="1">
+  <component name="ProjectFrameBounds">
     <option name="x" value="488" />
     <option name="width" value="1439" />
     <option name="height" value="1088" />
@@ -117,7 +112,7 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="49574000" />
+    <option name="totallyTimeSpent" value="50127000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="391" y="0" width="1151" height="870" extended-state="0" />
