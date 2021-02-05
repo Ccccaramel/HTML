@@ -1,0 +1,86 @@
+Q:如何在浏览器中打开 VSCode 的 html ? 
+A:在 VSCode 中搜索并安装组件 open in browser , Alt+B 即可在默认浏览器中打开
+
+ JS 键盘按钮 KeyCode
+  字母+数字:
+    按键          键码   |   按键          键码   |   按键          键码
+    A             65    |   N             78     |   0             48
+    B             66    |   O             79     |   1             49
+    C             67    |   P             80     |   2             50
+    D             68    |   Q             81     |   3             51
+    E             69    |   R             82     |   4             52
+    F             70    |   S             83     |   5             53
+    G             71    |   T             84     |   6             54
+    H             72    |   U             85     |   7             55
+    I             73    |   V             86     |   8             56
+    J             74    |   W             87     |   9             57 
+    K             75    |   X             88
+    L             76    |   Y             89 
+    M             77    |   Z             90 
+  功能键+数字键盘:
+    按键          键码   |   按键          键码   |   按键          键码
+    F1            65    |   0             96     |   *             106
+    F2            66    |   1             97     |   +             107
+    F3            67    |   2             98     |   Enter         108
+    F4            68    |   3             99     |   -             109
+    F5            69    |   4             100    |   .             110
+    F6            70    |   5             101    |   /             111
+    F7            71    |   6             102
+    F8            72    |   7             103
+    F9            73    |   8             104
+    F10           74    |   9             105
+    F11           75
+    F12           76
+  控制键:
+    按键          键码   |   按键          键码   |   按键          键码   |   按键          键码
+    BackSpace     85    |   Esc           27     |   Right Arrow   39    |   -_            189
+    Tab           9     |   Spacebar      32     |   Down Arrow    40    |   .>            190
+    Clear         12    |   Page Up       33     |   Insert        45    |   /?            191
+    Enter         13    |   Page Down     34     |   Delete        46    |   `~            192
+    Shift         16    |   End           35     |   Num Lock      144   |   [{            219
+    Control       17    |   Home          36     |   :;            186   |   \|            220
+    Alt           18    |   Left Arrow    37     |   =+            187   |   ]}            221
+    Cape Lock     20
+  组合键:
+     Shift Control Alt 在 JS 中可使用"window.event.shiftKey","window.event.ctrlKey","window.event.altKey"代替
+     Internet Explorer/Chrome 浏览器使用 event.keyCode 取回被按下的字符,而 Netscape/Firefox/Opera 等浏览器使用 event.which
+  利用 onkeydown 事件获取用户按下键盘信息
+    <html>
+      <body>
+        <script type="text/javascript">
+          function noNumbers(e){
+            var keynum;
+            var keychar;
+            keynum = window.event ? e.keyCode : e.which;
+            keychar = StringfromCharCode(keynum);
+            alert(keynum + ':' + keychar);
+          }
+        </script>
+        <input type="text" onkeydown="return noNumbers(event)" />
+      </body>
+    </html>
+     event.keyCode/event.which 得到的是一个按键对应的数字值( Unicode 编码)
+    获取 Unicode 编码值之后,如果需要得到实际对应的按键值,可以通过 String 对象的 fromCharCode 方法获得
+    对于字符获得的始终是大写字符
+   javascript 判断是否按回车键
+    <input id="chatMsg" name="chatMsg" type="text" size="90" onkeyprerss="enterHandler(event);">
+      function enterHandler(event){
+        //获取用户单击键盘的"键值"
+        var keyCode = event.keyCode ? event.keyCode : event.which ? event.which : event.charCode;
+        //如果是回车键
+        if(keyCode==13){
+            sendRequest();
+        }
+      }
+    </input>
+  屏蔽按键组合键
+    function Key Down(){
+      if((window.event.altKey)&&((window.event.keyCode==37)||(window.event.keyCode==39))){
+        alert("Alt + 方向键前进或后退网页");
+      }
+    }
+
+   
+   
+  
+  
