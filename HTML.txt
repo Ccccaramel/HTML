@@ -80,6 +80,14 @@ A:在 VSCode 中搜索并安装组件 open in browser , Alt+B 即可在默认浏
       }
     }
 
+两个 div 如果不分行
+  <div style="background-color: coral;width: 50px;height: 50px;display: inline-block;"></div><div style="background-color: red;width: 50px;height: 50px;display: inline-block;"></div>
+那么他们之间是无间隙的
+如果分成两行或格式化
+  <div style="background-color: coral;width: 50px;height: 50px;display: inline-block;"></div>
+  <div style="background-color: red;width: 50px;height: 50px;display: inline-block;"></div>
+那么他们是有间隙的,而且无法通过设置 padding 或 margin 或 border 为 0 使之贴近
+可以在它们的父节点添加 style="font-size: 0;" 消除间隙
    
    
   
