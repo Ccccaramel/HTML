@@ -6,100 +6,97 @@
     <title>元胞自动机</title>
     <script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script>
     <!-- <link rel="stylesheet" type="text/css" href="CSS/017.css"> -->
+    <!-- 
+        规则:
+        1.移动至无元胞的位置时,在此处产生新元胞,并右转
+        2.移动至有元胞的位置时,"杀死"该元胞,并左转
+     -->
     <script>
-        function selfAdaption() {
-            var wid = $(window).width();
-            alert(wid);
-        }
+        var cellColor="rgb(146, 160, 240)"; // 生命的颜色
+        var next = "up"; // 下一步,即第一步向上移动
+        // var direction1=new Map([  //study
+        //     ['up',1],
+        //     ['down',2],
+        //     ['left',3],
+        //     ['right',4],
+        // ]);
+        var direction=new Map([ // 设定元胞的下一步只能在x轴或y轴上移动一格,及[上],[下],[左],[右],那么元胞的坐标对应如下计算
+            ['up',new Map([['x',0],['y',1]])],
+            ['down',new Map([['x',0],['y',-1]])],
+            ['left',new Map([['x',-1],['y',0]])],
+            ['right',new Map([['x',1],['y',0]])],
+        ]);
+        var directionPoint=new Map([ // key 代表元胞的指向, l 与 r 对应该指向的"左"与"右"
+            ['up',new Map([['l',new Map([['x',-1],['y',0]])],['r',new Map([['x',1],['y',0]])]])],
+            ['down',new Map([['l',new Map([['x',1],['y',0]])],['r',new Map([['x',-1],['y',0]])]])],
+            ['left',new Map([['l',new Map([['x',0],['y',-1]])],['r',new Map([['x',0],['y',1]])]])],
+            ['right',new Map([['l',new Map([['x',0],['y',1]])],['r',new Map([['x',0],['y',-1]])]])],
+        ]);
+        var point=new Map([ // 根据指向和获取方向
+            ['0,1','up'],
+            ['0,-1','down'],
+            ['-1,0','left'],
+            ['1,0','right'],
+        ])
+        // function selfAdaption() {
+        //     var wid = $(window).width();
+        //     alert(wid);
+        // }
         // window.onresize = function () {
         //     var wid = $(window).width();
-        //     alert('?'+wid);
+        //     alert('?'+direction.map.value);
         // }
-        $(window).resize(function () { // 动态获取页面大小
-            var Height = $(window).height();
-            var Width = $(window).width();
-            console.log('?'+Width);
-        })
-        // function init() {
-        //     var root = document.getElementById("main");
-        //     for (var y = 100; y > -101; y--) {
-        //         var label = document.createElement("div");
-        //         label.setAttribute('id', "rand:" + y);
-        //         label.setAttribute('style', 'font-size: 0;');
-        //         root.appendChild(label);
-        //         for (var x = -100; x < 101; x++) {
-        //             var element = document.createElement("div");
-        //             element.setAttribute('id', + x + "," + y);
-        //             element.setAttribute('style', 'background-color: 000000;width: 20px;height: 20px;display: inline-block;border: 0.5px;border-style: dashed;border-color: #8fbd7c;');
-        //             label.appendChild(element);
-        //         }
-        //     }
-        //     var ele = document.getElementById("0,0");
-        //     ele.style.backgroundColor = "#ffffff";
-        // }
+        // $(window).resize(function () { // 动态获取页面大小
+        //     var Height = $(window).height();
+        //     var Width = $(window).width();
+        //     console.log('?'+Width);
+        // })
+        $(document).ready(function(){  //初次打开页面执行
+            // alert(direction3.get("up").get("y"));获取指定方向
+            // alert(directionPoint.get("left").get("l").get("y")); // 获取指定方向的"左""右"
+        });
+        function init() {
+            var root = document.getElementById("main");
+            for (var y = 10; y > -11; y--) {
+                var label = document.createElement("div");
+                label.setAttribute('id', "rand:" + y);
+                label.setAttribute('style', 'font-size: 0;text-align:center;');
+                root.appendChild(label);
+                for (var x = -10; x < 11; x++) {
+                    var element = document.createElement("div");
+                    element.setAttribute('id', + x + "," + y);
+                    element.setAttribute('style', 'background-color: #ffffff;width: 20px;height: 20px;display: inline-block;border: 0.5px;border-color: #8fbd7c;border-style: dashed;');
+                    label.appendChild(element);
+                }
+            }
+            var ele = document.getElementById("0,0");
+            ele.style.backgroundColor = co1;
+        }
     </script>
     <style type="text/css">
+        /* .main-1 {
+            text-align:center;
+        } */
         .test-1 {
-            background-color: blue;
+            background-color: rgb(146, 160, 240);
             width: 48px;
             height: 48px;
             display: inline-block;
             border: 1px;
             border-style: dashed;
-            border-color: #000000;
-            margin: 0px;
-        }
-
-        .test-2 {
-            background-color: red;
-            width: 48px;
-            height: 48px;
-            /* display: inline-block; */
-            border: 1px;
-            border-style: dashed;
-            border-color: #000000;
+            border-color: #913232;
             margin: 0px;
         }
     </style>
 </head>
-
-<body style="background-color: #000000;height: 100%;margin: 0px;" onload="init();">
+<body style="background-color: #000000;height: 100%;margin: 0px;min-width: 700px;" onload="init();">
     <div style="height: 50px;">
     </div>
     <div id="main">
-        <div id="rand-1" style="height: 50px;width: 100%;font-size: 0;">
-            <div class="test-1"></div>
-            <div class="test-1"></div>
-            <div class="test-1"></div>
-            <div class="test-1"></div>
-            <div class="test-1"></div>
-            <div class="test-1"></div>
-            <div class="test-1"></div>
-            <div class="test-1"></div>
-            <div class="test-1"></div>
-            <div class="test-1"></div>
-            <div class="test-1"></div>
-            <div class="test-1"></div>
-            <div class="test-1"></div>
-            <div class="test-1"></div>
-            <div class="test-1"></div>
-            <div class="test-1"></div>
-            <div class="test-1"></div>
-            <div class="test-1"></div>
-            <div class="test-1"></div>
-            <div class="test-1"></div>
-            <div class="test-1"></div>
-
-        </div>
-        <!-- <div id="rand-2" style="height: 50px;">
-            <div class="test-2"></div>
-            <div class="test-2"></div>
-            <div class="test-2"></div>
-            <div class="test-2"></div>
-            <div class="test-2"></div>
-
-        </div> -->
+        <!-- <div class="test-1"></div>
+        <div class="test-1"></div>
+        <div class="test-1"></div>
+        <div class="test-1"></div> -->
     </div>
 </body>
-
 </html>
