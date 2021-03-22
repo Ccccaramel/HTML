@@ -12,31 +12,33 @@
         2.移动至有元胞的位置时,"杀死"该元胞,并左转
      -->
     <script>
-        var cellColor="rgb(146, 160, 240)"; // 生命的颜色
+        var cellColor = "rgb(146, 160, 240)"; // 生命的颜色
         var next = "up"; // 下一步,即第一步向上移动
+        var x = 0;
+        var y = 0; // 当前位置坐标 
         // var direction1=new Map([  //study
         //     ['up',1],
         //     ['down',2],
         //     ['left',3],
         //     ['right',4],
         // ]);
-        var direction=new Map([ // 设定元胞的下一步只能在x轴或y轴上移动一格,及[上],[下],[左],[右],那么元胞的坐标对应如下计算
-            ['up',new Map([['x',0],['y',1]])],
-            ['down',new Map([['x',0],['y',-1]])],
-            ['left',new Map([['x',-1],['y',0]])],
-            ['right',new Map([['x',1],['y',0]])],
+        var direction = new Map([ // 设定元胞的下一步只能在x轴或y轴上移动一格,及[上],[下],[左],[右],那么元胞的坐标对应如下计算
+            ['up', new Map([['x', 0], ['y', 1]])],
+            ['down', new Map([['x', 0], ['y', -1]])],
+            ['left', new Map([['x', -1], ['y', 0]])],
+            ['right', new Map([['x', 1], ['y', 0]])],
         ]);
-        var directionPoint=new Map([ // key 代表元胞的指向, l 与 r 对应该指向的"左"与"右"
-            ['up',new Map([['l',new Map([['x',-1],['y',0]])],['r',new Map([['x',1],['y',0]])]])],
-            ['down',new Map([['l',new Map([['x',1],['y',0]])],['r',new Map([['x',-1],['y',0]])]])],
-            ['left',new Map([['l',new Map([['x',0],['y',-1]])],['r',new Map([['x',0],['y',1]])]])],
-            ['right',new Map([['l',new Map([['x',0],['y',1]])],['r',new Map([['x',0],['y',-1]])]])],
+        var directionPoint = new Map([ // key 代表元胞的指向, l 与 r 对应该指向的"左"与"右"
+            ['up', new Map([['l', new Map([['x', -1], ['y', 0]])], ['r', new Map([['x', 1], ['y', 0]])]])],
+            ['down', new Map([['l', new Map([['x', 1], ['y', 0]])], ['r', new Map([['x', -1], ['y', 0]])]])],
+            ['left', new Map([['l', new Map([['x', 0], ['y', -1]])], ['r', new Map([['x', 0], ['y', 1]])]])],
+            ['right', new Map([['l', new Map([['x', 0], ['y', 1]])], ['r', new Map([['x', 0], ['y', -1]])]])],
         ]);
-        var point=new Map([ // 根据指向和获取方向
-            ['0,1','up'],
-            ['0,-1','down'],
-            ['-1,0','left'],
-            ['1,0','right'],
+        var point = new Map([ // 根据指向和获取方向
+            ['0,1', 'up'],
+            ['0,-1', 'down'],
+            ['-1,0', 'left'],
+            ['1,0', 'right'],
         ])
         // function selfAdaption() {
         //     var wid = $(window).width();
@@ -51,9 +53,20 @@
         //     var Width = $(window).width();
         //     console.log('?'+Width);
         // })
-        $(document).ready(function(){  //初次打开页面执行
-            // alert(direction3.get("up").get("y"));获取指定方向
+        $(document).ready(function () {  //初次打开页面执行
+            // alert(direction.get("up").get("y"));获取指定方向
             // alert(directionPoint.get("left").get("l").get("y")); // 获取指定方向的"左""右"
+            //alert(direction.get(next).get("y"));获取指定方向
+            //alert(document.getElementById("div1").getAttribute("value"));
+
+            for (var count = 0; count < 101; count++) { // 元胞进化次数
+                x = x + direction.get(next).get("x");
+                y = y + direction.get(next).get("y"); // 下一步
+                //if (document.getElementById(x + "," + y).getAttribute("value") == 0) {
+                //    alert(1);
+                //}
+                //var nextdirection
+            }
         });
         function init() {
             var root = document.getElementById("main");
@@ -65,12 +78,16 @@
                 for (var x = -10; x < 11; x++) {
                     var element = document.createElement("div");
                     element.setAttribute('id', + x + "," + y);
+                    element.setAttribute('value', 0);
                     element.setAttribute('style', 'background-color: #ffffff;width: 20px;height: 20px;display: inline-block;border: 0.5px;border-color: #8fbd7c;border-style: dashed;');
                     label.appendChild(element);
                 }
             }
             var ele = document.getElementById("0,0");
-            ele.style.backgroundColor = co1;
+            ele.style.backgroundColor = cellColor;
+            var coordinate = 0 + "," + 0;
+            //alert(coordinate);
+            alert(document.getElementById(coordinate).getAttribute("value"));
         }
     </script>
     <style type="text/css">
@@ -89,14 +106,16 @@
         }
     </style>
 </head>
+
 <body style="background-color: #000000;height: 100%;margin: 0px;min-width: 700px;" onload="init();">
     <div style="height: 50px;">
     </div>
     <div id="main">
         <!-- <div class="test-1"></div>
         <div class="test-1"></div>
-        <div class="test-1"></div>
         <div class="test-1"></div> -->
+        <div class="test-1" id="div1" value="666"></div>
     </div>
 </body>
+
 </html>
