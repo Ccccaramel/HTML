@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en" style="height: 100%;">
+
+<head>
+    <meta charset="utf-8">
+    <title>元胞自动机</title>
+    <script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script>
+    <!-- <link rel="stylesheet" type="text/css" href="CSS/017.css"> -->
+    <!-- 
+        规则:
+          1.移动至无元胞的位置时,在此处产生新元胞,并右转
+          2.移动至有元胞的位置时,若该元胞等级为1则"进化",并左转
+            若等级大于1则继续按上一次方向移动
+        进化: overall_CellColor 颜色更换为 overall_CellColorLv2 并 value+1
+        value:代表元胞等级,2为最高等级
+     -->
+    <script>
+        var overall_Lock = 0;
+        var overall_Steps = 0; // 总步数
+        var overall_CellColorLv1 ="rgb(146, 160, 240)"; // 生命的颜色(等级1)
+        var overall_CellColorLv2 = "#ff6666"; // 生命的颜色(等级2)
+        var overall_SpaceBorderColor = "#8fbd7c"; // 默认边框颜色
+        var overall_Inorganic = "rgb(255, 255, 255)"; // 无生命
+        var overall_NextPoint = "up"; // (下一步)方向,默认第一步向上移动
+        var overall_X = 0; // 当前位置x坐标 
+        var overall_Y = 0; // 当前位置y坐标 
+        var overall_Limit = 10;
+        var overall_CellSize = "20px"; // 元胞尺寸
+        var overall_Coefficient = 20; // 膨胀增量
+        var overall_SpaceBackgroundColor = "#ffffff"; // 空间背景色/无生命
+        // var direction1=new Map([  //study
+        //     ['up',1],
+        //     ['down',2],
+        //     ['left',3],
+        //     ['right',4],
+        // ]);
+        /**
+         * 对应 overall_NextPoint 的[上],[下],[左],[右],那么元胞的坐标对应如下计算
+         */
+        var overall_Direction = new Map([
+            ['up', new Map([['x', 0], ['y', 1]])],
+            ['down', new Map([['x', 0], ['y', -1]])],
+            ['left', new Map([['x', -1], ['y', 0]])],
+            ['right', new Map([['x', 1], ['y', 0]])],
+        ]);
+        /**
+         *  key 代表元胞的指向, l 与 r 对应该指向的"左"与"右"以及对应方位的坐标计算
+         */
+        var overall_DirectionPoint = new Map([
+            ['up', new Map([['l', new Map([['x', -1], ['y', 0]])], ['r', new Map([['x', 1], ['y', 0]])]])],
+            ['down', new Map([['l', new Map([['x', 1], ['y', 0]])], ['r', new Map([['x', -1], ['y', 0]])]])],
+            ['left', new Map([['l', new Map([['x', 0], ['y', -1]])], ['r', new Map([['x', 0], ['y', 1]])]])],
+            ['right', new Map([['l', new Map([['x', 0], ['y', 1]])], ['r', new Map([['x', 0], ['y', -1]])]])],
+        ]);
+        /**
+         * 根据下一步的方位值获取真实方向
+         */
+        var overall_Point = new Map([ // 根据指向和获取方向
+            ['0,1', 'up'],
+            ['0,-1', 'down'],
+            ['-1,0', 'left'],
+            ['1,0', 'right'],
+        ])
+        // function selfAdaption() {
+        //     var wid = $(window).width();
+        //     alert(wid);
+        // }
+        // window.onresize = function () {
+        //     var wid = $(window).width();
+        //     alert('?'+direction.map.value);
+        // }
+        // $(window).resize(function () { // 动态获取页面大小
+        //     var Height = $(window).height();
+        //     var Width = $(window).width();
+        //     console.log('?'+Width);
+        // })
+        $(document).ready(function () {  //初次打开页面执行
+            // alert(direction.get("up").get("y"));获取指定方向
+            // alert(directionPoint.get("left").get("l").get("y")); // 获取指定方向的"左""右"
+            //alert(direction.get(next).get("y"));获取指定方向
+            //alert(document.getElementById("div1").getAttribute("value"));
+        });
+        function init() { // 初始化空间
+            var root = document.getElementById("main");
+            for (var y = 10; y > -11; y--) {
+                var label = document.createElement("div");
+                label.setAttribute('id', "rand:" + y);
+                label.setAttribute('style', 'font-size: 0;text-align:center;');
+                root.appendChild(label);
+                for (var x = -10; x < 11; x++) {
+                    var element = document.createElement("div");
+                    element.setAttribute('id', + x + "," + y);
+                    element.setAttribute('value', 0);
+                    element.setAttribute('style', 'background-color: ' + overall_SpaceBackgroundColor + ';width: ' + overall_CellSize + ';height: ' + overall_CellSize + ';display: inline-block;border: 0.5px;border-color: ' + overall_SpaceBorderColor + ';border-style: dashed;');
+                    label.appendChild(element);
+                }
+            }
+            var ele = document.getElementById("0,0");
+            ele.style.backgroundColor = overall_CellColorLv1;
+            ele.className = "test-2";
+            ele.setAttribute("value", 1); // 初始元胞
+        }
+        function start() { // 手动
+            // 取消上一个元胞的"选中"状态
+            var ele = document.getElementById(overall_X + "," + overall_Y);
+            ele.className = "non";
+            /**
+             * 计算下一步坐标
+             */
+            overall_X = overall_X + overall_Direction.get(overall_NextPoint).get("x");
+            overall_Y = overall_Y + overall_Direction.get(overall_NextPoint).get("y");
+            var nextPlace = overall_X + "," + overall_Y;
+            if (overall_X <= -overall_Limit || overall_X >= overall_Limit || overall_Y <= -overall_Limit || overall_Y >= overall_Limit) { // 必须等于!
+                overall_Lock = 0;
+                alert("超出可视界限,步数:" + overall_Steps);
+                expand();
+                // loop();
+                // return;
+            }
+            overall_Steps++;
+            var next_value = parseInt(document.getElementById(nextPlace).getAttribute("value"));
+            var nextEle = document.getElementById(nextPlace);
+            nextEle.className = "test-2";
+            var temp = "";
+            if (next_value == 0) { // 无生命
+                document.getElementById(nextPlace).setAttribute("value", 1); // 产生元胞
+                document.getElementById(nextPlace).style.backgroundColor = overall_CellColorLv1; // 产生元胞
+                temp = overall_DirectionPoint.get(overall_NextPoint).get("l");
+            } else { // 存在生命
+                document.getElementById(nextPlace).setAttribute("value", next_value + 1);
+                if (next_value == 1) {
+                    document.getElementById(nextPlace).style.backgroundColor = overall_CellColorLv2;
+                    temp = overall_DirectionPoint.get(overall_NextPoint).get("r");
+                } else {
+                    return;
+                }
+            }
+            var temp_x = temp.get("x");
+            var temp_y = temp.get("y");
+            var p = temp_x + "," + temp_y;
+            overall_NextPoint = overall_Point.get(p);
+        }
+        $(document).keydown(function (event) {
+            if (event.keyCode == 13) {
+                start();
+            }
+        });
+        async function loop() { // 自动
+            overall_Lock = 1;
+            while (overall_Lock) {
+                start();
+                await sleep(10);
+            }
+        }
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms))
+        }
+        function expand() { // 空间膨胀
+            /**
+             * 膨胀规则
+             * 每次欲超出可是界限时先扩展可视空间
+             * 每次可视空间向四方扩展 overall_Coefficient 个单位
+             * 并且每个单元缩小长宽减小1px
+             */
+            var maxLimit = overall_Limit + overall_Coefficient;
+            var minLimit = -overall_Limit - overall_Coefficient;
+            var root = document.getElementById("main");
+            for (var y = overall_Limit + 1; y <= maxLimit; y++) { // y 正轴(创建)
+                var label = document.createElement("div");
+                label.setAttribute('id', "rand:" + y);
+                label.setAttribute('style', 'font-size: 0;text-align:center;');
+                root.insertBefore(label, root.firstChild);
+                for (var x = minLimit; x <= maxLimit; x++) {
+                    var element = document.createElement("div");
+                    element.setAttribute('id', + x + "," + y);
+                    element.setAttribute('value', 0);
+                    element.setAttribute('style', 'background-color: ' + overall_SpaceBackgroundColor + ';width: ' + overall_CellSize + ';height: ' + overall_CellSize + ';display: inline-block;border: 0.5px;border-color: ' + overall_SpaceBorderColor + ';border-style: dashed;');
+                    label.appendChild(element);
+                }
+            }
+            for (var y = overall_Limit; y >= -overall_Limit; y--) { // 扩展原空间
+                var label = document.getElementById("rand:" + y);
+                for (var x = -overall_Limit - 1; x >= minLimit; x--) { // x 负轴(创建)
+                    var element = document.createElement("div");
+                    element.setAttribute('id', + x + "," + y);
+                    element.setAttribute('value', 0);
+                    element.setAttribute('style', 'background-color: ' + overall_SpaceBackgroundColor + ';width: ' + overall_CellSize + ';height: ' + overall_CellSize + ';display: inline-block;border: 0.5px;border-color: ' + overall_SpaceBorderColor + ';border-style: dashed;');
+                    label.insertBefore(element, label.firstChild);
+                }
+                for (var x = overall_Limit + 1; x <= maxLimit; x++) { // x 正轴(创建)
+                    var element = document.createElement("div");
+                    element.setAttribute('id', + x + "," + y);
+                    element.setAttribute('value', 0);
+                    element.setAttribute('style', 'background-color: ' + overall_SpaceBackgroundColor + ';width: ' + overall_CellSize + ';height: ' + overall_CellSize + ';display: inline-block;border: 0.5px;border-color: ' + overall_SpaceBorderColor + ';border-style: dashed;');
+                    label.appendChild(element);
+                }
+            }
+            for (var y = -overall_Limit - 1; y >= minLimit; y--) { // y 负轴(创建)
+                var label = document.createElement("div");
+                label.setAttribute('id', "rand:" + y);
+                label.setAttribute('style', 'font-size: 0;text-align:center;');
+                root.appendChild(label);
+                for (var x = minLimit; x <= maxLimit; x++) {
+                    var element = document.createElement("div");
+                    element.setAttribute('id', + x + "," + y);
+                    element.setAttribute('value', 0);
+                    element.setAttribute('style', 'background-color: ' + overall_SpaceBackgroundColor + ';width: ' + overall_CellSize + ';height: ' + overall_CellSize + ';display: inline-block;border: 0.5px;border-color: ' + overall_SpaceBorderColor + ';border-style: dashed;');
+                    label.appendChild(element);
+                }
+            }
+            overall_Limit = overall_Limit + overall_Coefficient;
+        }
+    </script>
+    <style type="text/css">
+        .test-1 {
+            background-color: rgb(146, 160, 240);
+            width: 48px;
+            height: 48px;
+            display: inline-block;
+            border: 1px;
+            border-style: dashed;
+            border-color: #913232;
+            margin: 0px;
+        }
+        .test-2 {
+            animation:myfirst 1s infinite;
+            animation-iteration-count:1;  /* 播放次数 */
+            /* animation-direction:alternate; 倒放 */
+        }
+        @keyframes myfirst {
+            from {
+                background: #bb99ff;
+            }
+            to {
+                background: #ffcccc;
+            }
+        }
+        .non {
+        }
+    </style>
+</head>
+
+<body style="background-color: #000000;height: 100%;min-width: 700px;width: 6000px;" onload="init();">
+    <div style="height: 70px;">
+        <div style="width: 20%;margin: 0 40%;">
+            <div onclick="start()"
+                style="width: 100%;height: 30px;background-color: rgb(146, 160, 240);font-size: 20px;text-align: center;color: aliceblue;border-radius: 10px;vertical-align: middle;display: inline-block;margin-bottom: 5px;">
+                start</div>
+            <div onclick="loop()"
+                style="width: 100%;height: 30px;background-color: rgb(146, 160, 240);font-size: 20px;text-align: center;color: aliceblue;border-radius: 10px;vertical-align: middle;display: inline-block;">
+                loop</div>
+        </div>
+    </div>
+    <div id="main">
+    </div>
+</body>
+
+</html>
