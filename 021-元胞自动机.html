@@ -8,11 +8,16 @@
     <!-- <link rel="stylesheet" type="text/css" href="CSS/017.css"> -->
     <!-- 
         规则:
-          1.当元胞周围存在4个以上元胞时则将它们"清除"
-          2.当元胞周围元胞数量为奇数时,其四"周"的空"空间"将产生新元胞
-          3.当元胞周围元胞数量为偶数时,其四"角"的空"空间"将产生新元胞
-          4.如果某一单位空间被标记为"清除",则不会在本次演化中产生新元胞
-        改变触发"清除"的所需元胞数量的条件可得到不同的结果
+          1."死","生"交替进行,先"死"后"生"
+          2."死":
+            <1>当元胞周围的元胞数量大于等于4,则其四角以及它自己将死亡
+            <2>当元胞周围的元胞数量小于4且大于等于2,则无变化
+            <3>当元胞周围的元胞数量等于1,则死亡,并"诅咒"该单位空间
+          3."生":
+            <1>当元胞周围的元胞数量等于2或0,则其四周产生元胞
+            <2>当元胞周围的元胞数量为其他数量,则无变化
+          4."诅咒":
+            若被诅咒的单位空间因"生"要产生元胞时,则本次不产生元胞,并解除"诅咒"
      -->
     <script>
         var overall_Lock = 0;
@@ -35,18 +40,19 @@
          *   (-overall_Limit,  overall_Limit)
          * 四点连接成的一个封闭区域
          */
-        var overall_Limit = 10;
+        var overall_Limit = 20;
         var overall_CellSize = "20px"; // 元胞尺寸
         var overall_Coefficient = 20; // 膨胀增量
         var overall_SpaceBackgroundColor = "#ffffff"; // 空间背景色/无生命
+        var overall_Stage = 0; // 0:"死" 1:"生"
         function init() { // 初始化空间
             var root = document.getElementById("main");
-            for (var y = 10; y > -11; y--) {
+            for (var y = overall_Limit; y >= -overall_Limit; y--) {
                 var label = document.createElement("div");
                 label.setAttribute('id', "rand:" + y);
                 label.setAttribute('style', 'font-size: 0;text-align:center;');
                 root.appendChild(label);
-                for (var x = -10; x < 11; x++) {
+                for (var x = -overall_Limit; x <= overall_Limit; x++) {
                     var element = document.createElement("div");
                     element.setAttribute('id', + x + "," + y);
                     element.setAttribute('value', 0);
@@ -55,7 +61,33 @@
                     label.appendChild(element);
                 }
             }
-            var ele = document.getElementById("0,0");
+            initCell(1, 1);
+            initCell(1, -1);
+            initCell(-1, 1);
+            initCell(-1, -1);
+
+            initCell(-16, 0);
+            initCell(-14, 0);
+
+            initCell(-18, 18);
+            initCell(-17, 18);
+            initCell(-17, 17);
+            initCell(-16, 17);
+            initCell(-18, 16);
+            initCell(-17, 16);
+
+            initCell(16, 0);
+
+            initCell(-17, -18);
+            initCell(-17, -17);
+            initCell(-17, -16);
+
+            initCell(17, -18);
+            initCell(17, -17);
+            initCell(17, -16);
+        }
+        function initCell(x, y) {
+            var ele = document.getElementById(x + "," + y);
             ele.style.backgroundColor = overall_CellColor;
             ele.className = "test-2";
             ele.setAttribute("value", 1); // 初始元胞
@@ -72,6 +104,7 @@
                     if (parseInt(ele.getAttribute("value")) == 1) { // 找到元胞
                         if (y <= -overall_Limit + 1 || y >= overall_Limit - 1 || x <= -overall_Limit + 1 || x >= overall_Limit - 1) {
                             overall_Lock = 0;
+                            continue;
                             alert("超出可视界限,步数:" + overall_Steps);
                             expand();
                         }
@@ -84,21 +117,25 @@
                         t_sign += statistics(x - 1, y + 1);
                         t_sign += statistics(x - 1, y);
                         t_sign += statistics(x - 1, y - 1);
-                        if (t_sign > 5) { //四"角"
-                            kill(x + 1, y + 1);
-                            kill(x + 1, y - 1);
-                            kill(x - 1, y - 1);
-                            kill(x - 1, y + 1);
-                        } else if (t_sign % 2 == 1) { //奇  四"角"
-                            birth(x + 1, y + 1);
-                            birth(x + 1, y - 1);
-                            birth(x - 1, y - 1);
-                            birth(x - 1, y + 1);
-                        } else { //偶 四"周"
-                            birth(x, y + 1);
-                            birth(x + 1, y);
-                            birth(x, y - 1);
-                            birth(x - 1, y);
+                        if (overall_Stage) { // 生
+                            if (t_sign == 2 || t_sign == 0) { // 四周产生元胞
+                                birth(x, y + 1);
+                                birth(x + 1, y);
+                                birth(x, y - 1);
+                                birth(x - 1, y);
+                            }
+                        } else { // 死
+                            if (t_sign >= 4) { // 四"角"以及自己
+                                kill(x, y);
+                                kill(x + 1, y + 1);
+                                kill(x + 1, y - 1);
+                                kill(x - 1, y + 1);
+                                kill(x - 1, y - 1);
+                                curse(x, y);
+                            } else if (t_sign == 1) {
+                                kill(x, y);
+                                curse(x, y);
+                            }
                         }
                     }
                 }
@@ -120,12 +157,17 @@
                         ele.style.backgroundColor = overall_Inorganic;
                         ele.setAttribute("data-new", 0);
                         ele.className = "non";
+                    } else if (parseInt(ele.getAttribute("data-new")) == -4) { // 杀死被诅咒的元胞
+                        ele.setAttribute("value", 0); // 产生元胞
+                        ele.style.backgroundColor = overall_Inorganic;
+                        ele.className = "non";
                     }
                 }
             }
             overall_Steps++;
+            overall_Stage = overall_Stage ^ 1;
         }
-        function statistics(x, y) {
+        function statistics(x, y) { // 统计指定元胞周围的元胞数量
             if (parseInt(document.getElementById(x + "," + y).getAttribute("value")) == 1) {
                 return 1;
             } else {
@@ -133,18 +175,28 @@
             }
         }
         function birth(x, y) { // 标记
-            if (document.getElementById(x + "," + y).getAttribute("data-new") != -1) {
+            if (document.getElementById(x + "," + y).getAttribute("data-new") == -4) {
+                document.getElementById(x + "," + y).setAttribute("data-new", 0);
+            } else if (document.getElementById(x + "," + y).getAttribute("value") == 0) {
                 document.getElementById(x + "," + y).setAttribute("data-new", 1);
             }
         }
-        function kill(x, y) { // 标记
-            document.getElementById(x + "," + y).setAttribute("data-new", -1);
+        function kill(x, y) { // 标记,如果该单位空间存在元胞则"杀死"
+            var ele = document.getElementById(x + "," + y);
+            if (parseInt(ele.getAttribute("value")) == 1) {
+                ele.setAttribute("data-new", -1); // 产生元胞
+            }
+        }
+        function curse(x, y) { // 诅咒
+            var ele = document.getElementById(x + "," + y);
+            ele.setAttribute("data-new", -4);
         }
         $(document).keydown(function (event) {
             if (event.keyCode == 13) {
                 start();
             }
         });
+
         async function loop() { // 自动
             overall_Lock = 1;
             while (overall_Lock) {
@@ -243,7 +295,7 @@
     </style>
 </head>
 
-<body style="background-color: #000000;height: 100%;min-width: 700px;width: 6000px;" onload="init();">
+<body style="background-color: #000000;height: 100%;min-width: 700px;" onload="init();">
     <div style="height: 70px;">
         <div style="width: 20%;margin: 0 40%;">
             <div onclick="start()"
