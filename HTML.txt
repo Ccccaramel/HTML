@@ -89,6 +89,12 @@ A:在 VSCode 中搜索并安装组件 open in browser , Alt+B 即可在默认浏
 那么他们是有间隙的,而且无法通过设置 padding 或 margin 或 border 为 0 使之贴近
 可以在它们的父节点添加 style="font-size: 0;" 消除间隙
    
-   
+Q:AJax 提交时报错:TypeError: Illegal invocation
+A:如果你是提交的数据类型包含 FormData 那么需要在 ajax 中添加如下配置
+    processData: false,  // 告诉jQuery不要去处理发送的数据
+    contentType: false,   // 告诉jQuery不要去设置Content-Type请求头
+
+Q:打印 JSON 数据
+A:JSON.stringify(josn);
   
   
