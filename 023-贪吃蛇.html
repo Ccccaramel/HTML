@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>贪吃蛇</title>
+    <script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script>
+    <script>
+        var overallCellColor = "hsl(0, 100%, 70%)";
+        var overallSpaceBorderColor = "#8fbd7c"; // 默认边框颜色
+        var pointColor = "#FF6347";
+
+        const X = 30;
+        const Y = 30;
+        var RUNNING = false;
+        var gear=10;
+        var overAllCellSize = "20px"; // 元胞尺寸
+        var overAllSpaceBackgroundColor = "#ffffff"; // 空间背景色/无生命
+        var actionMap = {
+            "up": { x: 0, y: 1 },
+            "left": { x: -1, y: 0 },
+            "right": { x: 1, y: 0 },
+            "down": { x: 0, y: -1 }
+        };
+        var palyer;
+        /**
+         * 37:左,38:上,39:右,40:下
+         **/
+        var directionMap = {
+            37: "left",
+            38: "up",
+            39: "right",
+            40: "down"
+        };
+        var direction,beforeDirection;
+        function init() {
+            initSpace();
+            initPlayer();
+            createFoot();
+        }
+        // 初始化空间
+        function initSpace() {
+            $("#gear").html(gear);
+            var root = document.getElementById("main");
+            $("#main").empty();
+            for (var y = Y; y >= 1; y--) {
+                var label = document.createElement("div");
+                label.setAttribute('id', "rand:" + y);
+                label.setAttribute('style', 'font-size: 0;text-align:center;');
+                root.appendChild(label);
+                for (var x = 1; x <= X; x++) {
+                    var element = document.createElement("div");
+                    element.setAttribute('id', + x + "," + y);
+                    element.setAttribute('value', 0);
+                    element.setAttribute('data-new', 0); // 下一个单位时间产生元胞的标志(1:产生,0:不产生)
+                    element.setAttribute('style', 'background-color: ' + overAllSpaceBackgroundColor + ';width: ' + overAllCellSize + ';height: ' + overAllCellSize + ';display: inline-block;border: 0.5px;border-color: ' + overallSpaceBorderColor + ';border-style: dashed;');
+                    label.appendChild(element);
+                }
+            }
+        }
+        // 初始化玩家
+        function initPlayer() {
+            palyer = [{ x: 3, y: 1 }, { x: 2, y: 1 }, { x: 1, y: 1 }];
+            direction = "right";
+            beforeDirection = "right";
+            for (var x = 1; x <= 3; x++) {
+                var ele = document.getElementById(x + "," + 1);
+                ele.style.backgroundColor = overallCellColor;
+                ele.setAttribute("value", 1);
+            }
+        }
+        // 生成食物
+        function createFoot() {
+            var ele;
+            do {
+                var x = Math.floor(Math.random() * 30 + 1);
+                var y = Math.floor(Math.random() * 30 + 1);
+                ele = document.getElementById(x + "," + y);
+            } while (parseInt(document.getElementById(x + "," + y).getAttribute("value")) == 1);
+            ele.style.backgroundColor = pointColor;
+            ele.className = "test-2";
+            ele.setAttribute("value", 2);
+            var d = directionMap[direction];
+        }
+        /**
+         * 按键响应
+         * 37:左,38:上,39:右,40:下
+         **/
+        function whichButton(event) {
+            newDirection = directionMap[event.keyCode];
+            if(checkDirection(newDirection)){
+                direction = newDirection;
+            }
+        }
+        // 检查新方向与当前方向相反
+        function checkDirection(newDirection){
+            if(actionMap[direction].x+actionMap[newDirection].x==0&&actionMap[direction].y+actionMap[newDirection].y==0){
+                return false;
+            }else{
+                return true;
+            }
+        }
+        async function running() { // 自动
+            while (RUNNING) {
+                if(!checkDirection(beforeDirection)){
+                    direction=beforeDirection;
+                }
+                var x = palyer[0].x;
+                var y = palyer[0].y;
+                x = x + actionMap[direction].x;
+                y = y + actionMap[direction].y;
+                if (x > 30 || x < 1 || y > 30 || y < 1) { // 碰墙
+                    RUNNING = false;
+                    alert("碰墙,游戏结束!");
+                    init();
+                    return;
+                }
+                var ele = document.getElementById(x + "," + y);
+                if (parseInt(ele.getAttribute("value")) == 0) {  // 空白格
+                    var lastPoint = palyer.pop(); // 删除最后一个节点
+                    lastEle = document.getElementById(lastPoint.x + "," + lastPoint.y);
+                    lastEle.style.backgroundColor = overAllSpaceBackgroundColor;
+                    lastEle.setAttribute("value", 0);
+                    ele.style.backgroundColor = overallCellColor;
+                    ele.setAttribute("value", 1);
+                    var point = {
+                        x: x,
+                        y: y
+                    };
+                    palyer.unshift(point);// 成长
+                    beforeDirection=direction;
+                } else if (parseInt(ele.getAttribute("value")) == 1) { // 撞到自己
+                    RUNNING = false;
+                    alert("撞到自己,游戏结束!" + parseInt(ele.getAttribute("value"))+";"+x+","+y);
+                    init();
+                    break;
+                } else if (parseInt(ele.getAttribute("value")) == 2) { // 食物
+                    var point = {
+                        x: x,
+                        y: y
+                    };
+                    palyer.unshift(point);// 成长
+                    ele.style.backgroundColor = overallCellColor;
+                    ele.setAttribute("value", 1);
+                    createFoot();
+                    beforeDirection=direction;
+                }
+                await sleep(500+(10-gear)*40);
+            }
+        }
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms))
+        }
+        function start() {
+            if (RUNNING) { // 多次连续执行 running 会有加速效果
+                return;
+            }
+            RUNNING = true;
+            running();
+        }
+        function stop() {
+            RUNNING = false;
+        }
+        function speedUp(){
+            if(gear==20){
+                return;
+            }
+            gear++;
+            updateGear();
+        }
+        function speedDown(){
+            if(gear==1){
+                return;
+            }
+            gear--;
+            updateGear();
+        }
+        function updateGear(){
+            $("#gear").html(gear);
+        }
+    </script>
+    <style type="text/css">
+        .test-1 {
+            background-color: rgb(146, 160, 240);
+            width: 48px;
+            height: 48px;
+            display: inline-block;
+            border: 1px;
+            border-style: dashed;
+            border-color: #913232;
+            margin: 0px;
+        }
+
+        .test-2 {
+            animation: myfirst 1s infinite;
+            animation-iteration-count: 1;
+            /* 播放次数 */
+        }
+
+        @keyframes myfirst {
+            from {
+                background: #bb99ff;
+            }
+
+            to {
+                background: #ffcccc;
+            }
+        }
+    </style>
+</head>
+
+<body style="background-color: #000000;height: 100%;min-width: 700px;" onload="init();" onkeyup="whichButton(event)">
+    <div style="height: 110px;">
+        <div style="width: 20%;margin: 0 40%;">
+            <div onclick="start()"
+                style="width: 100%;height: 30px;background-color: rgb(146, 160, 240);font-size: 20px;text-align: center;color: aliceblue;border-radius: 10px;vertical-align: middle;display: inline-block;cursor:pointer">
+                start</div>
+            <div style="width: 100%;height: 30px;align-items: center;margin-top: 5px;margin-bottom: 5px;font-size: 20px;">
+                <div onclick="speedUp()"
+                    style="width: 38%;height: 30px;background-color: rgb(146, 160, 240);text-align: center;color: aliceblue;border-radius: 10px;float:left;cursor:pointer">
+                    加速</div>
+                <div id="gear"
+                    style="width: 20%;height: 30px;background-color: rgb(146, 160, 240);text-align: center;color: aliceblue;border-radius: 10px;margin:0 2% 0;float:left;cursor:pointer">
+                    0</div>
+                <div onclick="speedDown()"
+                    style="width: 38%;height: 30px;background-color: rgb(146, 160, 240);text-align: center;color: aliceblue;border-radius: 10px; float:left;cursor:pointer">
+                    减速</div>
+            </div>
+            <div onclick="stop()"
+                style="width: 100%;height: 30px;background-color: rgb(146, 160, 240);font-size: 20px;text-align: center;color: aliceblue;border-radius: 10px;vertical-align: middle;display: inline-block;cursor:pointer">
+                stop</div>
+        </div>
+    </div>
+    <div id="main">
+    </div>
+</body>
+
+</html>
