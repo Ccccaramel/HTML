@@ -85,19 +85,22 @@
                 ele.setAttribute("value", 1);
             }
         }
+        var foot={};
         // 生成食物
         function createFoot() {
-            var ele;
+            var ele,x,y;
             do {
-                var x = Math.floor(Math.random() * X + 1);
-                var y = Math.floor(Math.random() * Y + 1);
+                x = Math.floor(Math.random() * X + 1);
+                y = Math.floor(Math.random() * Y + 1);
                 ele = document.getElementById(x + "," + y);
             } while (parseInt(document.getElementById(x + "," + y).getAttribute("value")) != 0);
-            console.log(">>>"+parseInt(ele.getAttribute("value")));
             ele.setAttribute("value", 2);
             ele.style.backgroundColor = pointColor;
             ele.className = "test-2";
-            console.log("foot!"+parseInt(ele.getAttribute("value")));
+            foot={
+                x:x,
+                y:y
+            }
             var d = directionMap[direction];
         }
         /**
@@ -175,6 +178,8 @@
                 var cell=palyer[1]; // 将原本的头部颜色修改
                 ele = document.getElementById(cell.x + "," + cell.y);
                 ele.style.backgroundColor = cellColor;
+                runningAI();
+                console.log("next.");
                 await sleep(500+(10-gear)*40);
             }
         }
@@ -227,6 +232,70 @@
             $("#level").html(level);
 
             init();
+        }
+        var guessDirection; // 猜测方向,演算时的方向
+        var fineLine={}; // 最优路径方案
+        var finding=false; // ai 查找中
+        /**
+         * 理想执行流程:
+         *   1.吃掉食物后
+         *     选择路径最短的那条路线
+         *   2.假设不再产生食物的情况下,能继续追着尾巴前进且不会碰到自己和边界
+         *     选择最短的路线
+         **/
+        function runningAI(){
+            guessDirection=direction; // 初始化猜测方向
+            var cell=palyer[0];
+            var res=recursion(cell);
+            // console.log("ai:"+res.length);
+        }
+        var directionArr=["up","left","right","down"];
+        var q=0;
+        function recursion(cell,guessDirection){ // 递归
+            console.log(">"+cell.x+","+cell.y);
+            if(finding){
+                var way=[{x:cell.x,y:cell.y}];
+                if(cell.x==foot.x&&cell.y==foot.y){
+                    finding=false;
+                    return way.unshift({x:cell.x,y:cell.y});
+                }
+                for(var i=0;i<directionArr.length;i++){
+                    if(directionArr[i]==guessDirection){
+                        continue;
+                    }
+                    if(directionArr[i]=="up"){
+                        if((cell.y+1)<=Y){
+                            var ele = document.getElementById(cell.x + "," + (cell.y+1));
+                            if(parseInt(ele.getAttribute("value")) == 0){
+                                way.unshift(recursion(cell,"up"));
+                            }
+                        }
+                    }else if(directionArr[i]=="left"){
+                        if(cell.x>1){
+                            var ele = document.getElementById((cell.x-1) + "," + cell.y);
+                            if(parseInt(ele.getAttribute("value")) == 0){
+                                way.unshift(recursion(cell,"left"));
+                            }                            
+                        }
+                    }else if(directionArr[i]=="right"){
+                        if((cell.x+1)<=X){
+                            var ele = document.getElementById((cell.x+1) + "," + cell.y);
+                            if(parseInt(ele.getAttribute("value")) == 0){
+                                way.unshift(recursion(cell,"right"));
+                            }                            
+                        }
+                    }else if(directionArr[i]=="down"){
+                        if(cell.y>1){
+                            var ele = document.getElementById(cell.x + "," + (cell.y-1));
+                            if(parseInt(ele.getAttribute("value")) == 0){
+                                way.unshift(recursion(cell,"down"));
+                            }                            
+                        }
+                    }
+                }
+                return way;
+            }
+
         }
     </script>
     <style type="text/css">
