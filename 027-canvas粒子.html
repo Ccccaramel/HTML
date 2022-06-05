@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>canvas</title>
+</head>
+<body>
+    <!-- canvas 默认长度300px,宽度150px -->
+    <div id="div1">
+        <canvas id="can1" width="800px" height="400px"></canvas>
+    </div>
+</canvas>
+<style type="text/css">
+    /* 不建议通过 css 改变 canvas 的长宽,这样做会使画布内绘制的内容变形 */
+    #div1{
+        /* width: 200px;
+        height: 200px; */
+        border: 5px;
+        border-style: dashed;
+        border-color: blueviolet;
+        background-color: rgb(120, 234, 74);
+    }
+</style>
+<script type="text/javascript">
+    var canvas=document.getElementById("can1");
+    
+    // 检测是否支持 canvas 2d
+    if(canvas.getContext){
+        console.log("支持.");
+    }
+    else{
+        console.log("不支持.");
+    }
+
+    // 返回一个 canvas 渲染的上下文,如果不支持则返回 null,只有一个
+    var ctx1=canvas.getContext("2d");
+
+    /***
+     * 画一个矩形
+     ***/
+    ctx1.fillStyle="#66ccff";
+    // (x,y,width,height),参数没有单位
+    ctx1.fillRect(10,10,100,100); // 填充的矩形
+
+    /***
+     * 画一个矩形的边框
+     ***/
+    ctx1.strokeRect(130,10,100,100);
+
+    /***
+     * 清除指定矩形的区域的绘图
+     ***/
+    ctx1.fillRect(250,10,100,100);
+    ctx1.clearRect(275,35,50,50);
+
+    /***
+     * 使用 rect + fill 绘制一个填充的矩形
+     ***/
+    ctx1.beginPath();
+    ctx1.rect(360,10,100,100);
+    ctx1.fill();
+
+    /***
+      * 绘制路径 
+      ***/
+      ctx1.beginPath(); // 新建一条 path
+      ctx1.moveTo(10,150); // 起点
+      ctx1.lineTo(100,150); // 终点
+      ctx1.closePath(); // 闭合路径,从起点依次连接各点
+      ctx1.stroke(); // 描边,绘制起点与终点的连线
+
+    /***
+      * 绘制一个三角形并填充颜色
+      ***/
+      ctx1.beginPath(); // 新建一条 path
+      ctx1.moveTo(110,150); // 起点
+      ctx1.lineTo(200,150); // 中点
+      ctx1.lineTo(200,250); // 终点
+      ctx1.closePath();
+      ctx1.stroke();
+      ctx1.fill(); // 填充所有点连接后形成的闭合区域
+
+     /***
+      * 绘制圆弧
+      * arc(x,y,r,startAngle,endAngle,anticlockwise)
+      *   以(x, y)为圆心,以 r 为半径
+      *   从 startAngle 弧度开始到 endAngle 弧度结束
+      *   anticlosewise 是布尔值, true 表示逆时针, false 表示顺时针(默认是顺时针)
+      * 这里的度数都是弧度, 0 弧度是指的 x 轴正方向
+      ***/
+      ctx1.beginPath();
+      ctx1.arc(210,150,100,0,Math.PI/2,false);
+      ctx1.stroke();
+
+      /***
+       * 绘制一个圆并填充(不描边)
+       ***/
+      ctx1.beginPath();
+      ctx1.arc(370,200,50,0,Math.PI*2,false);
+      ctx1.fill();
+
+      /***
+       * 绘制一个圆弧
+       ***/
+       ctx1.beginPath();
+       ctx1.moveTo(450, 50);
+      //参数1、2：控制点1坐标   参数3、4：控制点2坐标  参数4：圆弧半径
+      ctx1.arcTo(600, 50, 600, 200, 100);
+      ctx1.lineTo(600, 200)
+      ctx1.stroke();
+    
+      ctx1.beginPath();
+      ctx1.rect(450, 50, 10, 10);
+      ctx1.rect(600, 50, 10, 10)
+      ctx1.rect(600, 200, 10, 10)
+      ctx1.fill()
+
+    // 将文本输出到画布上
+
+
+</script>
+</body>
+</html>

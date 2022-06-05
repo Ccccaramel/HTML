@@ -96,5 +96,9 @@ A:如果你是提交的数据类型包含 FormData 那么需要在 ajax 中添�
 
 Q:打印 JSON 数据
 A:JSON.stringify(josn);
+
+Q:border 失效
+A:border 宽度和样式必须都设置,仅设置宽度无效
+
   
   
