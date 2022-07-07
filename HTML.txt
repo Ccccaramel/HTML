@@ -100,5 +100,13 @@ A:JSON.stringify(josn);
 Q:border 失效
 A:border 宽度和样式必须都设置,仅设置宽度无效
 
-  
-  
+简述x-www-form-urlencoded,form-data,raw之间的区别
+  1.form-data
+    能传输数据流(上传)的键值对
+    就是http请求中的multipart/form-data,既可以上传⽂件等⼆进制数据,也可以上传表单键值对
+  2.x-www-form-urlencoded
+    能传输⽂本(不能传输数据流,不能上传)的键值对
+    就是application/x-www-from-urlencoded,不能⽤来上传⼆进制数据流,⽐如图⽚上传等
+  3.raw
+    ⾮键值对数据
+    可以上传任意格式的⽂本,可以上传text,json,xml,html等
