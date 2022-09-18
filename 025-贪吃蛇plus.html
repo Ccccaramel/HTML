@@ -282,7 +282,7 @@
                             var ele = document.getElementById((cell.x+1) + "," + cell.y);
                             if(parseInt(ele.getAttribute("value")) == 0){
                                 way.unshift(recursion(cell,"right"));
-                            }                            
+                            }
                         }
                     }else if(directionArr[i]=="down"){
                         if(cell.y>1){
