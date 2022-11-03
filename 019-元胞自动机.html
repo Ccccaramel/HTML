@@ -9,15 +9,15 @@
     <!-- 
         规则:
           1.移动至无元胞的位置时,在此处产生新元胞,并左转
-          2.移动至有元胞的位置时,该元胞"进化"
+          2.移动至有元胞的位置时,该元胞"成长"
             依据元胞的等级进行下一步:
               为奇数时,左转
               为偶数时,右转
-        进化: overall_CellColor 颜色变得更深并 value+1
-        value:代表元胞等级,2为最高等级
+        成长: overall_CellColor 颜色变得更深并 value+1
+        value:代表元胞等级
      -->
     <!-- 
-         无法在短时间内形成"规律",因为"变量"(指元胞等级)无上限;可解开 115-116 行
+         无法"收敛",因为"变量"(指元胞等级)无上限;可解开 115-116 行
       -->
     <script>
         var overall_Lock = 0;
@@ -39,7 +39,7 @@
         var overall_Y = 0; // 当前位置y坐标 
         var overall_Limit = 10;
         var overall_CellSize = "20px"; // 元胞尺寸
-        var overall_Coefficient = 20; // 膨胀增量
+        var overall_Coefficient = 5; // 膨胀增量
         var overall_SpaceBackgroundColor = "#ffffff"; // 空间背景色/无生命
         /**
          * 对应 overall_NextPoint 的[上],[下],[左],[右],那么元胞的坐标对应如下计算

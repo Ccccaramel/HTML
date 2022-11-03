@@ -29,10 +29,10 @@
         //     ['right',4],
         // ]);
         var overall_Direction = new Map([ // 设定元胞的下一步只能在x轴或y轴上移动一格,及[上],[下],[左],[右],那么元胞的坐标对应如下计算
-            ['up', new Map([['x', 0], ['y', 1]])],
-            ['down', new Map([['x', 0], ['y', -1]])],
-            ['left', new Map([['x', -1], ['y', 0]])],
-            ['right', new Map([['x', 1], ['y', 0]])],
+            ['up', new Map([['x', 0], ['y', 1]])], // 0,1
+            ['down', new Map([['x', 0], ['y', -1]])], // 0,-1
+            ['left', new Map([['x', -1], ['y', 0]])], // -1,0
+            ['right', new Map([['x', 1], ['y', 0]])], // 1,0
         ]);
         var overall_DirectionPoint = new Map([ // key 代表元胞的指向, l 与 r 对应该指向的"左"与"右"
             ['up', new Map([['l', new Map([['x', -1], ['y', 0]])], ['r', new Map([['x', 1], ['y', 0]])]])],
@@ -102,14 +102,14 @@
             // alert(nextPlace);
             var next_value = document.getElementById(nextPlace).getAttribute("value");
             var temp = "";
-            if (next_value == 1) { // 有生命
-                document.getElementById(nextPlace).setAttribute("value", 0); // 产生元胞
-                document.getElementById(nextPlace).style.backgroundColor = overall_Inorganic; // 产生元胞
-                temp = overall_DirectionPoint.get(overall_NextPoint).get("r");
-            } else { // 无生命
-                document.getElementById(nextPlace).setAttribute("value", 1);
-                document.getElementById(nextPlace).style.backgroundColor = overall_CellColor;
-                temp = overall_DirectionPoint.get(overall_NextPoint).get("l");
+            if (next_value == 1) { // 有元胞
+                document.getElementById(nextPlace).setAttribute("value", 0); // "杀死"元胞
+                document.getElementById(nextPlace).style.backgroundColor = overall_Inorganic; // 颜色改为白色
+                temp = overall_DirectionPoint.get(overall_NextPoint).get("r"); // 右转
+            } else { // 无元胞
+                document.getElementById(nextPlace).setAttribute("value", 1); // 产生元胞
+                document.getElementById(nextPlace).style.backgroundColor = overall_CellColor; // 颜色变更
+                temp = overall_DirectionPoint.get(overall_NextPoint).get("l"); // 左转
             }
             var temp_x = temp.get("x");
             var temp_y = temp.get("y");

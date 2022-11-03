@@ -24,15 +24,15 @@
          * ·          ·
          * (6,25) ··· (10,25)
          **/
-        const X_S= 6;
-        const Y_S= 26;
-        const X_E= 10;
-        const Y_E= 30;
+        const X_S = 6;
+        const Y_S = 26;
+        const X_E = 10;
+        const Y_E = 30;
         const LENGTH = 5;
-        var gearMax=20;
+        var gearMax = 20;
         var run = false; // 开始运行;其中 value 为2的随时间不断下落
-        var check=false; // 是否需要检查方块是否超界
-        var gear=10;
+        var check = false; // 是否需要检查方块是否超界
+        var gear = 10;
         var overAllCellSize = "20px"; // 元胞尺寸
         var actionMap = {
             "up": { x: 0, y: 1 },
@@ -41,197 +41,197 @@
             "down": { x: 0, y: -1 }
         };
         var palyer;
-        var getNext=true;
-        var nextShap=[][5]; // 下一个下落的方块
-        var eleMap=[]; // 存放下落的方块位置
+        var getNext = true;
+        var nextShap = [][5]; // 下一个下落的方块
+        var eleMap = []; // 存放下落的方块位置
         /**
          * 下落的方块最下一行在窗口中是第几行
          **/
-        var rand=Y_S;
-        var lock=true; // 锁,当下落的方块正在下落过程中时,不可对下落的方块进行转换
-        var level=1; // 当前游戏等级
-        var levelMin=1;
-        var levelMax=4;
-        var SHAP_SIZE=5; // 每一等级包含4种形状的方块
-        var score=0; // 分数+=行数*难度
+        var rand = Y_S;
+        var lock = true; // 锁,当下落的方块正在下落过程中时,不可对下落的方块进行转换
+        var level = 1; // 当前游戏等级
+        var levelMin = 1;
+        var levelMax = 4;
+        var SHAP_SIZE = 5; // 每一等级包含4种形状的方块
+        var score = 0; // 分数+=行数*难度
         /**
          * [等级]-[序号]
          **/
-        var shapMap=[
+        var shapMap = [
             // 1-1
             [
-                [0,0,0,0,0],
-                [0,0,0,0,0],
-                [1,1,1,1,0],
-                [0,0,0,0,0],
-                [0,0,0,0,0]
+                [0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0],
+                [1, 1, 1, 1, 0],
+                [0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0]
             ],
             // 1-2
             [
-                [0,0,0,0,0],
-                [1,1,0,0,0],
-                [1,0,0,0,0],
-                [1,0,0,0,0],
-                [0,0,0,0,0]
+                [0, 0, 0, 0, 0],
+                [1, 1, 0, 0, 0],
+                [1, 0, 0, 0, 0],
+                [1, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0]
             ],
             // 1-3
             [
-                [0,0,0,0,0],
-                [1,0,0,0,0],
-                [1,1,0,0,0],
-                [1,0,0,0,0],
-                [0,0,0,0,0]
-            ], 
+                [0, 0, 0, 0, 0],
+                [1, 0, 0, 0, 0],
+                [1, 1, 0, 0, 0],
+                [1, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0]
+            ],
             // 1-4
             [
-                [0,0,0,0,0],
-                [1,0,0,0,0],
-                [1,1,0,0,0],
-                [0,1,0,0,0],
-                [0,0,0,0,0]
-            ], 
+                [0, 0, 0, 0, 0],
+                [1, 0, 0, 0, 0],
+                [1, 1, 0, 0, 0],
+                [0, 1, 0, 0, 0],
+                [0, 0, 0, 0, 0]
+            ],
             // 1-5
             [
-                [0,0,0,0,0],
-                [1,1,0,0,0],
-                [1,1,0,0,0],
-                [0,0,0,0,0],
-                [0,0,0,0,0]
-            ], 
+                [0, 0, 0, 0, 0],
+                [1, 1, 0, 0, 0],
+                [1, 1, 0, 0, 0],
+                [0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0]
+            ],
             // 2-1
             [
-                [0,0,0,0,0],
-                [1,0,1,0,0],
-                [1,1,1,0,0],
-                [1,0,1,0,0],
-                [0,0,0,0,0]
-            ], 
+                [0, 0, 0, 0, 0],
+                [1, 0, 1, 0, 0],
+                [1, 1, 1, 0, 0],
+                [1, 0, 1, 0, 0],
+                [0, 0, 0, 0, 0]
+            ],
             // 2-2
             [
-                [0,0,0,0,0],
-                [1,1,0,0,0],
-                [0,1,1,0,0],
-                [1,1,0,0,0],
-                [0,0,0,0,0]
-            ], 
+                [0, 0, 0, 0, 0],
+                [1, 1, 0, 0, 0],
+                [0, 1, 1, 0, 0],
+                [1, 1, 0, 0, 0],
+                [0, 0, 0, 0, 0]
+            ],
             // 2-3
             [
-                [0,0,0,0,0],
-                [0,1,0,0,0],
-                [1,1,1,1,0],
-                [0,0,1,0,0],
-                [0,0,0,0,0]
-            ], 
+                [0, 0, 0, 0, 0],
+                [0, 1, 0, 0, 0],
+                [1, 1, 1, 1, 0],
+                [0, 0, 1, 0, 0],
+                [0, 0, 0, 0, 0]
+            ],
             // 2-4
             [
-                [0,0,0,0,0],
-                [1,1,0,0,0],
-                [0,1,1,0,0],
-                [0,0,1,1,0],
-                [0,0,0,0,0]
-            ], 
+                [0, 0, 0, 0, 0],
+                [1, 1, 0, 0, 0],
+                [0, 1, 1, 0, 0],
+                [0, 0, 1, 1, 0],
+                [0, 0, 0, 0, 0]
+            ],
             // 2-5
             [
-                [1,0,0,0,0],
-                [1,1,0,0,0],
-                [1,1,1,0,0],
-                [1,1,0,0,0],
-                [1,0,0,0,0]
+                [1, 0, 0, 0, 0],
+                [1, 1, 0, 0, 0],
+                [1, 1, 1, 0, 0],
+                [1, 1, 0, 0, 0],
+                [1, 0, 0, 0, 0]
             ],
             // 3-1
             [
-                [0,0,0,0,0],
-                [1,1,1,0,0],
-                [1,0,1,0,0],
-                [1,1,1,0,0],
-                [0,0,0,0,0]
-            ], 
+                [0, 0, 0, 0, 0],
+                [1, 1, 1, 0, 0],
+                [1, 0, 1, 0, 0],
+                [1, 1, 1, 0, 0],
+                [0, 0, 0, 0, 0]
+            ],
             // 3-2
             [
-                [0,0,0,0,0],
-                [0,1,1,1,0],
-                [1,0,0,0,1],
-                [0,1,1,1,0],
-                [0,0,0,0,0]
-            ], 
+                [0, 0, 0, 0, 0],
+                [0, 1, 1, 1, 0],
+                [1, 0, 0, 0, 1],
+                [0, 1, 1, 1, 0],
+                [0, 0, 0, 0, 0]
+            ],
             // 3-3
             [
-                [0,0,0,0,0],
-                [1,0,0,1,0],
-                [1,1,1,1,0],
-                [1,0,0,1,0],
-                [0,0,0,0,0]
-            ], 
+                [0, 0, 0, 0, 0],
+                [1, 0, 0, 1, 0],
+                [1, 1, 1, 1, 0],
+                [1, 0, 0, 1, 0],
+                [0, 0, 0, 0, 0]
+            ],
             // 3-4
             [
-                [0,0,0,0,0],
-                [1,1,0,1,0],
-                [0,1,1,0,0],
-                [1,1,0,1,0],
-                [0,0,0,0,0]
-            ], 
+                [0, 0, 0, 0, 0],
+                [1, 1, 0, 1, 0],
+                [0, 1, 1, 0, 0],
+                [1, 1, 0, 1, 0],
+                [0, 0, 0, 0, 0]
+            ],
             // 3-5
             [
-                [1,0,0,0,0],
-                [0,1,0,1,0],
-                [0,0,1,1,0],
-                [0,1,0,1,0],
-                [1,0,0,0,0]
+                [1, 0, 0, 0, 0],
+                [0, 1, 0, 1, 0],
+                [0, 0, 1, 1, 0],
+                [0, 1, 0, 1, 0],
+                [1, 0, 0, 0, 0]
             ],
             // 4-1
             [
-                [1,0,0,0,1],
-                [0,1,0,1,0],
-                [0,0,1,0,0],
-                [0,1,0,1,0],
-                [1,0,0,0,1]
-            ], 
+                [1, 0, 0, 0, 1],
+                [0, 1, 0, 1, 0],
+                [0, 0, 1, 0, 0],
+                [0, 1, 0, 1, 0],
+                [1, 0, 0, 0, 1]
+            ],
             // 4-2
             [
-                [0,0,1,0,0],
-                [0,0,1,0,0],
-                [1,1,1,1,1],
-                [0,0,1,0,0],
-                [0,0,1,0,0]
-            ], 
+                [0, 0, 1, 0, 0],
+                [0, 0, 1, 0, 0],
+                [1, 1, 1, 1, 1],
+                [0, 0, 1, 0, 0],
+                [0, 0, 1, 0, 0]
+            ],
             // 4-3
             [
-                [1,1,1,1,1],
-                [1,0,0,0,1],
-                [1,0,1,0,1],
-                [1,0,0,0,1],
-                [1,1,1,1,1]
-            ], 
+                [1, 1, 1, 1, 1],
+                [1, 0, 0, 0, 1],
+                [1, 0, 1, 0, 1],
+                [1, 0, 0, 0, 1],
+                [1, 1, 1, 1, 1]
+            ],
             // 4-4
             [
-                [1,0,1,0,1],
-                [0,1,0,1,0],
-                [1,0,1,0,1],
-                [0,1,0,1,0],
-                [1,0,1,0,1]
-            ], 
+                [1, 0, 1, 0, 1],
+                [0, 1, 0, 1, 0],
+                [1, 0, 1, 0, 1],
+                [0, 1, 0, 1, 0],
+                [1, 0, 1, 0, 1]
+            ],
             // 4-5
             [
-                [0,1,1,1,0],
-                [1,0,1,0,1],
-                [1,1,0,1,1],
-                [1,0,1,0,1],
-                [0,1,1,1,0]
+                [0, 1, 1, 1, 0],
+                [1, 0, 1, 0, 1],
+                [1, 1, 0, 1, 1],
+                [1, 0, 1, 0, 1],
+                [0, 1, 1, 1, 0]
             ]
         ];
 
-        var direction,beforeDirection;
+        var direction, beforeDirection;
         function init() {
             // 重置等级
-            level=1;
+            level = 1;
             $("#level").html(level);
             // 重置速度
-            gear=10;
+            gear = 10;
             $("#gear").html(gear);
             // 重置分数
-            score=0;
+            score = 0;
             $("#score").html(score);
-            run=false;
+            run = false;
             initMain();
             initMessage();
         }
@@ -249,10 +249,10 @@
                     var element = document.createElement("div");
                     element.setAttribute('id', x + "," + y);
                     element.setAttribute('value', 0);
-                    if(y>25){
+                    if (y > 25) {
                         element.setAttribute('style', 'background-color: ' + defaultColor + ';width: ' + overAllCellSize + ';height: ' + overAllCellSize + ';display: none;border: 1px;border-color: ' + overallSpaceBorderColor + ';border-style: dashed;');
                     }
-                    else{
+                    else {
                         element.setAttribute('style', 'background-color: ' + defaultColor + ';width: ' + overAllCellSize + ';height: ' + overAllCellSize + ';display: inline-block;border: 1px;border-color: ' + overallSpaceBorderColor + ';border-style: dashed;');
                     }
                     label.appendChild(element);
@@ -270,7 +270,7 @@
                 root.appendChild(label);
                 for (var x = 1; x <= LENGTH; x++) {
                     var element = document.createElement("div");
-                    element.setAttribute('id',"shape-" + x + "," + y);
+                    element.setAttribute('id', "shape-" + x + "," + y);
                     element.setAttribute('value', 0);
                     element.setAttribute('data-new', 0); // 下一个单位时间产生元胞的标志(1:产生,0:不产生)
                     element.setAttribute('style', 'background-color: ' + defaultColor + ';width: ' + overAllCellSize + ';height: ' + overAllCellSize + ';display: inline-block;border: 1px;border-color: ' + overallSpaceBorderColor + ';border-style: dashed;');
@@ -289,75 +289,75 @@
          *   3:80%,10%,10%
          *   4:70%,10%,10%,10%
          **/
-        function setNext(){
+        function setNext() {
             var a = Math.floor(Math.random() * 10); // 获取一个随机数
             var i = 0;
-            if(level==1){
+            if (level == 1) {
                 i = Math.floor(Math.random() * SHAP_SIZE);
             }
-            else if(level==2){
-                if(a<8){
+            else if (level == 2) {
+                if (a < 8) {
                     i = Math.floor(Math.random() * SHAP_SIZE);
                 }
-                else{
-                    i = Math.floor(Math.random() * SHAP_SIZE)+SHAP_SIZE;
+                else {
+                    i = Math.floor(Math.random() * SHAP_SIZE) + SHAP_SIZE;
                 }
             }
-            else if(level==3){
-                if(a<8){
+            else if (level == 3) {
+                if (a < 8) {
                     i = Math.floor(Math.random() * SHAP_SIZE);
                 }
-                else if(a<9){
-                    i = Math.floor(Math.random() * SHAP_SIZE)+SHAP_SIZE;
+                else if (a < 9) {
+                    i = Math.floor(Math.random() * SHAP_SIZE) + SHAP_SIZE;
                 }
-                else{
-                    i = Math.floor(Math.random() * SHAP_SIZE)+SHAP_SIZE*2;
+                else {
+                    i = Math.floor(Math.random() * SHAP_SIZE) + SHAP_SIZE * 2;
                 }
             }
-            else if(level==4){
-                if(a<7){
+            else if (level == 4) {
+                if (a < 7) {
                     i = Math.floor(Math.random() * SHAP_SIZE);
                 }
-                else if(a<8){
-                    i = Math.floor(Math.random() * SHAP_SIZE)+SHAP_SIZE;
+                else if (a < 8) {
+                    i = Math.floor(Math.random() * SHAP_SIZE) + SHAP_SIZE;
                 }
-                else if(a<9){
-                    i = Math.floor(Math.random() * SHAP_SIZE)+SHAP_SIZE*2;
+                else if (a < 9) {
+                    i = Math.floor(Math.random() * SHAP_SIZE) + SHAP_SIZE * 2;
                 }
-                else{
-                    i = Math.floor(Math.random() * SHAP_SIZE)+SHAP_SIZE*3;
+                else {
+                    i = Math.floor(Math.random() * SHAP_SIZE) + SHAP_SIZE * 3;
                 }
             }
-            nextShap=shapMap[i];
+            nextShap = shapMap[i];
             for (var x = 1; x <= LENGTH; x++) {
                 for (var y = 1; y <= LENGTH; y++) {
-                    var val=nextShap[x-1][y-1];
-                    var ele = document.getElementById("shape-" +x + "," + y);
+                    var val = nextShap[x - 1][y - 1];
+                    var ele = document.getElementById("shape-" + x + "," + y);
                     ele.setAttribute("value", val);
-                    if(val==1){
+                    if (val == 1) {
                         ele.style.backgroundColor = pointColor;
-                    }else{
+                    } else {
                         ele.style.backgroundColor = defaultColor;
                     }
                 }
             }
         }
         // 将该形状在信息栏中和游戏窗口中
-        function putNext(){
-            eleMap=[];
+        function putNext() {
+            eleMap = [];
             for (var x = X_S; x <= X_E; x++) {
                 for (var y = Y_S; y <= Y_E; y++) {
-                    var val=nextShap[x-6][y-26];
+                    var val = nextShap[x - 6][y - 26];
                     var ele = document.getElementById(x + "," + y);
                     ele.setAttribute("value", 2);
-                    var xy={
-                        "x":x,
-                        "y":y,
+                    var xy = {
+                        "x": x,
+                        "y": y,
                     }
-                    if(val==1){
+                    if (val == 1) {
                         ele.style.backgroundColor = pointColor;
                         eleMap.push(xy);
-                    }else{
+                    } else {
                         ele.style.backgroundColor = defaultColor;
                     }
                 }
@@ -401,257 +401,257 @@
          *     <2>y 轴镜像
          * 由于已经将下落的方块融入到窗口中,想要转动它,则需要对其进行特殊的转换,
          **/
-        var exchange=true; //true:<1>,false:<2>
+        var exchange = true; //true:<1>,false:<2>
         function whichButton(event) {
-            var key=event.keyCode;
-            if(key==38&&lock==false){ // 上,旋转90° / y 轴镜像
+            var key = event.keyCode;
+            if (key == 38 && lock == false) { // 上,旋转90° / y 轴镜像
                 turn();
             }
         }
-        function leftMove(){
-            var eleTemp=[]; // 旋转后新的位置
-            for(var i=0;i<eleMap.length;i++){ // 先检查是否可以旋转
-                var x=eleMap[i].x-1;
-                var y=eleMap[i].y;
-                if(x<1){
+        function leftMove() {
+            var eleTemp = []; // 旋转后新的位置
+            for (var i = 0; i < eleMap.length; i++) { // 先检查是否可以旋转
+                var x = eleMap[i].x - 1;
+                var y = eleMap[i].y;
+                if (x < 1) {
                     return;
                 }
                 var ele = document.getElementById(x + "," + y);
-                if(parseInt(ele.getAttribute("value")) == 1){ // 旋转后碰到了固定了的方块
+                if (parseInt(ele.getAttribute("value")) == 1) { // 旋转后碰到了固定了的方块
                     return;
                 }
             }
-            for(var i=0;i<eleMap.length;i++){ // 将窗口中正在下落的方块清空
-                var x=eleMap[i].x;
-                var y=eleMap[i].y;
-                var xy={
-                    "x":x-1,
-                    "y":y,
+            for (var i = 0; i < eleMap.length; i++) { // 将窗口中正在下落的方块清空
+                var x = eleMap[i].x;
+                var y = eleMap[i].y;
+                var xy = {
+                    "x": x - 1,
+                    "y": y,
                 }
                 eleTemp.push(xy);
                 var ele = document.getElementById(x + "," + y);
                 ele.setAttribute("value", 0);
                 ele.style.backgroundColor = defaultColor;
             }
-            eleMap=eleTemp;
-            for(var i=0;i<eleTemp.length;i++){ // 将旋转后的下落方块放入窗口中
-                var x=eleTemp[i].x;
-                var y=eleTemp[i].y;
+            eleMap = eleTemp;
+            for (var i = 0; i < eleTemp.length; i++) { // 将旋转后的下落方块放入窗口中
+                var x = eleTemp[i].x;
+                var y = eleTemp[i].y;
                 var ele = document.getElementById(x + "," + y);
                 ele.setAttribute("value", 2);
                 ele.style.backgroundColor = pointColor;
             }
         }
-        function rightMove(){
-            var eleTemp=[]; // 旋转后新的位置
-            for(var i=0;i<eleMap.length;i++){ // 先检查是否可以旋转
-                var x=eleMap[i].x+1;
-                var y=eleMap[i].y;
-                if(x>X){
+        function rightMove() {
+            var eleTemp = []; // 旋转后新的位置
+            for (var i = 0; i < eleMap.length; i++) { // 先检查是否可以旋转
+                var x = eleMap[i].x + 1;
+                var y = eleMap[i].y;
+                if (x > X) {
                     return;
                 }
                 var ele = document.getElementById(x + "," + y);
-                if(parseInt(ele.getAttribute("value")) == 1){ // 旋转后碰到了固定了的方块
+                if (parseInt(ele.getAttribute("value")) == 1) { // 旋转后碰到了固定了的方块
                     return;
                 }
             }
-            for(var i=0;i<eleMap.length;i++){ // 将窗口中正在下落的方块清空
-                var x=eleMap[i].x;
-                var y=eleMap[i].y;
-                var xy={
-                    "x":x+1,
-                    "y":y,
+            for (var i = 0; i < eleMap.length; i++) { // 将窗口中正在下落的方块清空
+                var x = eleMap[i].x;
+                var y = eleMap[i].y;
+                var xy = {
+                    "x": x + 1,
+                    "y": y,
                 }
                 eleTemp.push(xy);
                 var ele = document.getElementById(x + "," + y);
                 ele.setAttribute("value", 0);
                 ele.style.backgroundColor = defaultColor;
             }
-            eleMap=eleTemp;
-            for(var i=0;i<eleTemp.length;i++){ // 将旋转后的下落方块放入窗口中
-                var x=eleTemp[i].x;
-                var y=eleTemp[i].y;
+            eleMap = eleTemp;
+            for (var i = 0; i < eleTemp.length; i++) { // 将旋转后的下落方块放入窗口中
+                var x = eleTemp[i].x;
+                var y = eleTemp[i].y;
                 var ele = document.getElementById(x + "," + y);
                 ele.setAttribute("value", 2);
                 ele.style.backgroundColor = pointColor;
             }
         }
-        function turn(){
-            var eleTemp=[]; // 旋转后新的位置
+        function turn() {
+            var eleTemp = []; // 旋转后新的位置
             /**
              * 记录下落的方块中元素最小y值,通过 shapX 和 shapY 确定方块的转动的参考点
              **/
-            var shapX=100;
-            var shapY=100;
-            for(var i=0;i<eleMap.length;i++){ // 找到"原点"
-                var x=eleMap[i].x;
-                var y=eleMap[i].y;
-                if(x<shapX){
-                    shapX=x;
+            var shapX = 100;
+            var shapY = 100;
+            for (var i = 0; i < eleMap.length; i++) { // 找到"原点"
+                var x = eleMap[i].x;
+                var y = eleMap[i].y;
+                if (x < shapX) {
+                    shapX = x;
                 }
-                if(y<shapY){
-                    shapY=y;
+                if (y < shapY) {
+                    shapY = y;
                 }
             }
-            if(exchange){
-                for(var i=0;i<eleMap.length;i++){ // 将下落的方块移动到以该"原点"为坐标系的第一象限上,且必须有点落在正 x 轴和正 y 轴上
-                    var x=eleMap[i].y-shapY+shapX;
-                    var y=eleMap[i].x-shapX+shapY;
-                    var xy={
-                        "x":x,
-                        "y":y,
+            if (exchange) {
+                for (var i = 0; i < eleMap.length; i++) { // 将下落的方块移动到以该"原点"为坐标系的第一象限上,且必须有点落在正 x 轴和正 y 轴上
+                    var x = eleMap[i].y - shapY + shapX;
+                    var y = eleMap[i].x - shapX + shapY;
+                    var xy = {
+                        "x": x,
+                        "y": y,
                     }
                     eleTemp.push(xy);
                     var ele = document.getElementById(x + "," + y);
-                    if(parseInt(ele.getAttribute("value")) == 1){ // 旋转后碰到了固定了的方块
+                    if (parseInt(ele.getAttribute("value")) == 1) { // 旋转后碰到了固定了的方块
                         return;
                     }
                 }
-                exchange=false;
+                exchange = false;
             }
-            else{
-                for(var i=0;i<eleMap.length;i++){ // 检查计算旋转之后的坐标是否
-                    var x=eleMap[i].x;
-                    var y=-eleMap[i].y+2*shapY+1;
-                    var xy={
-                        "x":x,
-                        "y":y,
+            else {
+                for (var i = 0; i < eleMap.length; i++) { // 检查计算旋转之后的坐标是否
+                    var x = eleMap[i].x;
+                    var y = -eleMap[i].y + 2 * shapY + 1;
+                    var xy = {
+                        "x": x,
+                        "y": y,
                     }
                     eleTemp.push(xy);
                     var ele = document.getElementById(x + "," + y);
-                    if(parseInt(ele.getAttribute("value")) == 1){ // 旋转后碰到了固定了的方块
+                    if (parseInt(ele.getAttribute("value")) == 1) { // 旋转后碰到了固定了的方块
                         return;
                     }
                 }
-                exchange=true;
+                exchange = true;
             }
-            for(var i=0;i<eleMap.length;i++){ // 将窗口中正在下落的方块清空
-                var x=eleMap[i].x;
-                var y=eleMap[i].y;
+            for (var i = 0; i < eleMap.length; i++) { // 将窗口中正在下落的方块清空
+                var x = eleMap[i].x;
+                var y = eleMap[i].y;
                 var ele = document.getElementById(x + "," + y);
                 ele.setAttribute("value", 0);
                 ele.style.backgroundColor = defaultColor;
             }
-            eleMap=eleTemp;
-            for(var i=0;i<eleTemp.length;i++){ // 将旋转后的下落方块放入窗口中
-                var x=eleTemp[i].x;
-                var y=eleTemp[i].y;
+            eleMap = eleTemp;
+            for (var i = 0; i < eleTemp.length; i++) { // 将旋转后的下落方块放入窗口中
+                var x = eleTemp[i].x;
+                var y = eleTemp[i].y;
                 var ele = document.getElementById(x + "," + y);
                 ele.setAttribute("value", 2);
                 ele.style.backgroundColor = pointColor;
             }
         }
         var gearTemp; // 保存原本速度
-        var sppend=false;
-        document.onkeydown=function(event){ // 按住不动
-            var key=event.keyCode;
-            if(key==37&&lock==false){ // 左移
+        var sppend = false;
+        document.onkeydown = function (event) { // 按住不动
+            var key = event.keyCode;
+            if (key == 37 && lock == false) { // 左移
                 leftMove();
             }
-            if(key==39&&lock==false){ // 右移
+            if (key == 39 && lock == false) { // 右移
                 rightMove();
             }
-            if(key==40&&lock==false){
-                if(!sppend){
-                    sppend=true;
-                    gearTemp=gear;
+            if (key == 40 && lock == false) {
+                if (!sppend) {
+                    sppend = true;
+                    gearTemp = gear;
                 }
-                gear=gearMax;
+                gear = gearMax;
                 console.log("加速");
             }
-        } 
-        document.onkeyup=function(event){ // 速度恢复
-            if(event.keyCode==40){
-                gear=gearTemp;
-                sppend=false;
+        }
+        document.onkeyup = function (event) { // 速度恢复
+            if (event.keyCode == 40) {
+                gear = gearTemp;
+                sppend = false;
                 console.log("速度恢复");
             }
         }
         async function running() { // 自动
             while (run) { // 每单位时间整体下落一格 
-                var land=true;
-                lock=true;
+                var land = true;
+                lock = true;
                 // 检查
-                for(var i=0;i<eleMap.length;i++){
-                    var x=eleMap[i].x;
-                    var y=eleMap[i].y;
-                    var getNext=false;
-                    if(parseInt(y)==1){ // 下落到最底层,终止下落的方块
-                        land=false;
+                for (var i = 0; i < eleMap.length; i++) {
+                    var x = eleMap[i].x;
+                    var y = eleMap[i].y;
+                    var getNext = false;
+                    if (parseInt(y) == 1) { // 下落到最底层,终止下落的方块
+                        land = false;
                     }
-                    else{
-                        var ele = document.getElementById(x + "," + (y-1));
-                        if(parseInt(ele.getAttribute("value")) == 1){ // 下方已存在固定了的方块,终止下落的方块
-                            land=false;
-                        }                        
+                    else {
+                        var ele = document.getElementById(x + "," + (y - 1));
+                        if (parseInt(ele.getAttribute("value")) == 1) { // 下方已存在固定了的方块,终止下落的方块
+                            land = false;
+                        }
                     }
 
-                    if(!land){
-                        if(y>25){ // 检查当前下落的方块是否在可是界限内,超出可视界限则游戏结束
+                    if (!land) {
+                        if (y > 25) { // 检查当前下落的方块是否在可是界限内,超出可视界限则游戏结束
                             run = false;
                             alert("游戏结束!");
                             break;
                         }
-                        else{
-                            for(var t=0;t<eleMap.length;t++){ // 当前方块已触底,将整体value置为1
-                                var x=eleMap[t].x;
-                                var y=eleMap[t].y;
+                        else {
+                            for (var t = 0; t < eleMap.length; t++) { // 当前方块已触底,将整体value置为1
+                                var x = eleMap[t].x;
+                                var y = eleMap[t].y;
                                 ele = document.getElementById(x + "," + y);
                                 ele.style.backgroundColor = pointColor;
                                 ele.setAttribute("value", 1);
                             }
                             eliminate();
-                            getNext=true;
+                            getNext = true;
                             break; // 已证实下落的方块中存在一个元素已触底,剩下的元素不用检测直接跳出
                         }
                     }
                 }
-                if(land){ // 允许下降,将下落的方块整体下移
-                    for(var i=0;i<eleMap.length;i++){ // 将原有的置0
+                if (land) { // 允许下降,将下落的方块整体下移
+                    for (var i = 0; i < eleMap.length; i++) { // 将原有的置0
                         var ele = document.getElementById(eleMap[i].x + "," + eleMap[i].y);
                         ele.style.backgroundColor = defaultColor;
                         ele.setAttribute("value", 0);
                     }
-                    for(var i=0;i<eleMap.length;i++){ // 将下落后的位置置2
-                        eleMap[i].y-=1;
+                    for (var i = 0; i < eleMap.length; i++) { // 将下落后的位置置2
+                        eleMap[i].y -= 1;
                         ele = document.getElementById(eleMap[i].x + "," + eleMap[i].y);
                         ele.style.backgroundColor = pointColor;
                         ele.setAttribute("value", 2);
                     }
                 }
-                lock=false;
-                if(getNext){
+                lock = false;
+                if (getNext) {
                     putNext();
                     setNext();
-                    rand=26;
+                    rand = 26;
                 }
                 rand--;
-                await sleep(500+(10-gear)*40);
+                await sleep(500 + (10 - gear) * 40);
             }
         }
         function sleep(ms) {
             return new Promise(resolve => setTimeout(resolve, ms))
         }
-        function eliminate(){ // 消除
-            for(var y=1,scoreY=1;y<Y_S;y++,scoreY++){
-                var eliminate=true;
-                for(var x=1;x<=X;x++){
+        function eliminate() { // 消除
+            for (var y = 1, scoreY = 1; y < Y_S; y++, scoreY++) {
+                var eliminate = true;
+                for (var x = 1; x <= X; x++) {
                     ele = document.getElementById(x + "," + y);
-                    if(parseInt(ele.getAttribute("value")) == 0){
-                        eliminate=false;
+                    if (parseInt(ele.getAttribute("value")) == 0) {
+                        eliminate = false;
                     }
                 }
-                if(eliminate){ // 当前行每个小格都有方块,将上一行向下一行平移,最后重新扫描
+                if (eliminate) { // 当前行每个小格都有方块,将上一行向下一行平移,最后重新扫描
                     setScore(scoreY);
-                    for(var m=y+1;m<Y_S;m++){
-                        for(var n=1;n<=X;n++){
+                    for (var m = y + 1; m < Y_S; m++) {
+                        for (var n = 1; n <= X; n++) {
                             ele1 = document.getElementById(n + "," + m);
-                            ele2 = document.getElementById(n + "," + (m-1));
-                            if(parseInt(ele1.getAttribute("value")) == 1){
+                            ele2 = document.getElementById(n + "," + (m - 1));
+                            if (parseInt(ele1.getAttribute("value")) == 1) {
                                 ele2.style.backgroundColor = pointColor;
                                 ele2.setAttribute("value", 1);
                             }
-                            else{
+                            else {
                                 ele2.style.backgroundColor = defaultColor;
                                 ele2.setAttribute("value", 0);
                             }
@@ -661,8 +661,8 @@
                 }
             }
         }
-        function setScore(y){ // 分数
-            score+=y*level;
+        function setScore(y) { // 分数
+            score += y * level;
             $("#score").html(score);
         }
         function start() {
@@ -675,38 +675,38 @@
         function stop() {
             run = false;
         }
-        function speedUp(){
-            if(gear==gearMax){
+        function speedUp() {
+            if (gear == gearMax) {
                 return;
             }
             gear++;
             updateGear();
         }
-        function speedDown(){
-            if(gear==1){
+        function speedDown() {
+            if (gear == 1) {
                 return;
             }
             gear--;
             updateGear();
         }
-        function updateGear(){
+        function updateGear() {
             $("#gear").html(gear);
         }
-        function lvUp(){
-            if(level==levelMax){
+        function lvUp() {
+            if (level == levelMax) {
                 return;
             }
             level++;
             updateLv();
         }
-        function lvDown(){
-            if(level==levelMin){
+        function lvDown() {
+            if (level == levelMin) {
                 return;
             }
             level--;
             updateLv();
         }
-        function updateLv(){
+        function updateLv() {
             $("#level").html(level);
         }
     </script>
@@ -742,9 +742,11 @@
 
 <body style="background-color: #000000;height: 100%;min-width: 700px;" onload="init();" onkeyup="whichButton(event);">
     <div style="height: 550px;margin: 0 30%;">
-         <div id="main" style="width: 70%;height: 100%;background-color: #a5ee78;float:left;border-radius: 10px;padding: 6px 0px 6px;">
+        <div id="main"
+            style="width: 70%;height: 100%;background-color: #a5ee78;float:left;border-radius: 10px;padding: 6px 0px 6px;">
         </div>
-        <div style="width: 30%;height: 100%;background-color: rgb(255, 255, 255);float:left;border-radius: 10px;padding: 6px 0px 6px;">
+        <div
+            style="width: 30%;height: 100%;background-color: rgb(255, 255, 255);float:left;border-radius: 10px;padding: 6px 0px 6px;">
             <div style="width: 100%;height: auto;text-align:center;">
                 <h3>下一个</h3>
             </div>
@@ -764,7 +766,7 @@
                     <h3>分数:</h3>
                 </div>
                 <div style="display: inline-block;">
-                    <b id="score">0</b>
+                    <h3 id="score">0</h3>
                 </div>
             </div>
 
@@ -772,21 +774,21 @@
                 style="width: 90%;height: 30px;background-color: rgb(146, 160, 240);margin: 5px 5% 5px;font-size: 20px;text-align: center;color: aliceblue;border-radius: 10px;vertical-align: middle;display: inline-block;cursor:pointer">
                 start</div>
             <div style="width: 90%;height: 30px;align-items: center;font-size: 20px;margin: 5px 5% 5px;">
-                <div  onclick="speedUp()"
+                <div onclick="speedUp()"
                     style="width: 38%;height: 30px;background-color: rgb(146, 160, 240);text-align: center;color: aliceblue;border-radius: 10px;float:left;cursor:pointer">
                     加速</div>
                 <div id="gear"
                     style="width: 20%;height: 30px;background-color: rgb(146, 160, 240);text-align: center;color: aliceblue;border-radius: 10px;margin:0 2% 0;float:left;cursor:pointer">
                     0</div>
-                <div  onclick="speedDown()"
+                <div onclick="speedDown()"
                     style="width: 38%;height: 30px;background-color: rgb(146, 160, 240);text-align: center;color: aliceblue;border-radius: 10px; float:left;cursor:pointer">
                     减速</div>
             </div>
             <div style="width: 90%;height: 30px;align-items: center;font-size: 20px;margin: 5px 5% 5px;">
-                <div  onclick="lvUp()"
+                <div onclick="lvUp()"
                     style="width: 49%;height: 30px;background-color: rgb(146, 160, 240);text-align: center;color: aliceblue;border-radius: 10px;float:left;cursor:pointer;margin-right: 1%;">
                     难度+</div>
-                <div  onclick="lvDown()"
+                <div onclick="lvDown()"
                     style="width: 49%;height: 30px;background-color: rgb(146, 160, 240);text-align: center;color: aliceblue;border-radius: 10px; float:left;cursor:pointer;margin-left: 1%;">
                     难度-</div>
             </div>
@@ -796,7 +798,7 @@
             <div onclick="init()"
                 style="width: 90%;height: 30px;background-color: rgb(146, 160, 240);margin: 5px 5% 5px;font-size: 20px;text-align: center;color: aliceblue;border-radius: 10px;vertical-align: middle;display: inline-block;cursor:pointer">
                 replay</div>
-        </div> 
+        </div>
     </div>
 </body>
 
